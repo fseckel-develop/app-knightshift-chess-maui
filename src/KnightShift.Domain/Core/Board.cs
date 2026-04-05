@@ -1,3 +1,5 @@
+using KnightShift.Domain.Exceptions;
+
 namespace KnightShift.Domain.Core;
 
 public class Board
@@ -20,7 +22,7 @@ public class Board
 
     public void MovePiece(Position from, Position to)
     {
-        var piece = GetPiece(from) ?? throw new InvalidOperationException("No piece at source position.");
+        var piece = GetPiece(from) ?? throw new PieceNotFoundException($"No piece at {from}");
         SetPiece(to, piece);
         SetPiece(from, null);
     }
@@ -46,6 +48,6 @@ public class Board
     private static void ValidatePosition(Position position)
     {
         if (!position.IsValid())
-            throw new ArgumentException("Invalid board position.");
+            throw new InvalidPositionException($"Invalid position: {position}");
     }
 }
