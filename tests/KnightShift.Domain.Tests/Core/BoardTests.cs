@@ -84,4 +84,44 @@ public class BoardTests
         Assert.Contains(pieces, p => p.position == p1);
         Assert.Contains(pieces, p => p.position == p2);
     }
+
+    [Fact]
+    public void Clone_Should_Copy_All_Pieces()
+    {
+        var board = new Board();
+
+        var p1 = new Position('a', 1);
+        var p2 = new Position('h', 8);
+
+        board.SetPiece(p1, new Piece(PieceType.Rook, PieceColor.White));
+        board.SetPiece(p2, new Piece(PieceType.King, PieceColor.Black));
+
+        var clone = board.Clone();
+
+        Assert.Equal(board.GetPiece(p1), clone.GetPiece(p1));
+        Assert.Equal(board.GetPiece(p2), clone.GetPiece(p2));
+    }
+
+    [Fact]
+    public void Clone_Should_Create_Independent_Instance()
+    {
+        var board = new Board();
+
+        var from = new Position('e', 2);
+        var to = new Position('e', 4);
+
+        board.SetPiece(from, new Piece(PieceType.Pawn, PieceColor.White));
+
+        var clone = board.Clone();
+
+        clone.MovePiece(from, to);
+
+        // original unchanged
+        Assert.NotNull(board.GetPiece(from));
+        Assert.Null(board.GetPiece(to));
+
+        // clone updated
+        Assert.Null(clone.GetPiece(from));
+        Assert.NotNull(clone.GetPiece(to));
+    }
 }
