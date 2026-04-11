@@ -21,10 +21,9 @@ public static class SlidingMoveGenerator
                 row += dRow;
                 column += dColumn;
 
-                if (row < 0 || row >= 8 || column < 0 || column >= 8)
+                if (!Position.TryCreateFromCoords(row, column, out var targetPosition))
                     break;
 
-                var targetPosition = Position.FromCoords(row, column);
                 var targetPiece = board.GetPiece(targetPosition);
 
                 if (targetPiece == null)

@@ -18,10 +18,8 @@ public class PawnMoveGenerator : IPieceMoveGenerator
 
         // 1. Forward move
         var forwardRow = row + direction;
-        if (IsInsideBoard(forwardRow, column))
+        if (Position.TryCreateFromCoords(forwardRow, column, out var forwardPosition))
         {
-            var forwardPosition = Position.FromCoords(forwardRow, column);
-
             if (board.IsEmpty(forwardPosition))
             {
                 moves.Add(new Move(from, forwardPosition));
@@ -30,11 +28,12 @@ public class PawnMoveGenerator : IPieceMoveGenerator
                 if (from.Rank == startRank)
                 {
                     var doubleRow = row + 2 * direction;
-                    var doublePosition = Position.FromCoords(doubleRow, column);
-
-                    if (board.IsEmpty(doublePosition))
+                    if (Position.TryCreateFromCoords(doubleRow, column, out var doublePosition))
                     {
-                        moves.Add(new Move(from, doublePosition));
+                        if (board.IsEmpty(doublePosition))
+                        {
+                            moves.Add(new Move(from, doublePosition));
+                        }
                     }
                 }
             }
@@ -47,10 +46,9 @@ public class PawnMoveGenerator : IPieceMoveGenerator
         {
             var captureColumn = column + offset;
 
-            if (!IsInsideBoard(forwardRow, captureColumn))
+            if (!Position.TryCreateFromCoords(forwardRow, captureColumn, out var targetPosition))
                 continue;
 
-            var targetPosition = Position.FromCoords(forwardRow, captureColumn);
             var targetPiece = board.GetPiece(targetPosition);
 
             if (targetPiece != null && targetPiece.Color != piece.Color)
@@ -61,7 +59,4 @@ public class PawnMoveGenerator : IPieceMoveGenerator
 
         return moves;
     }
-
-    private static bool IsInsideBoard(int row, int column)
-        => row >= 0 && row < 8 && column >= 0 && column < 8;
 }

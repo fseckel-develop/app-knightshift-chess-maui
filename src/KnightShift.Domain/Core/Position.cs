@@ -19,6 +19,20 @@ public sealed record Position
         return new Position(file, rank);
     }
 
+    public static bool TryCreateFromCoords(int row, int column, out Position position)
+    {
+        position = null!;
+        try
+        {
+            position = CreateFromCoords(row, column);
+            return true;
+        }
+        catch (InvalidPositionException)
+        {
+            return false;
+        }
+    }
+
     public bool IsValid() => File >= 'a' && File <= 'h' && Rank >= 1 && Rank <= 8;
 
     public int ToRow() => 8 - Rank;

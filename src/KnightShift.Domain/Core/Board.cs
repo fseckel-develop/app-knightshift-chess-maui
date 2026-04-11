@@ -37,7 +37,9 @@ public class Board
                 if (piece is not null)
                 {
                     yield return (
-                        Position.FromCoords(row, column),
+                        Position.TryCreateFromCoords(row, column, out var position) 
+                            ? position 
+                            : throw new InvalidPositionException($"Invalid position: ({row}, {column})"),
                         piece
                     );
                 }

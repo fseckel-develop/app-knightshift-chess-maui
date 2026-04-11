@@ -1,4 +1,5 @@
 using KnightShift.Domain.Core;
+using KnightShift.Domain.Exceptions;
 
 namespace KnightShift.Domain.Tests.Core;
 
@@ -50,11 +51,36 @@ public class PositionTests
     }
 
     [Fact]
-    public void FromCoords_Should_Return_Correct_Position()
+    public void CreateFromCoords_Should_Return_Correct_Position()
     {
-        var position = Position.FromCoords(0, 0);
+        var position = Position.CreateFromCoords(0, 0);
 
         Assert.Equal('a', position.File);
         Assert.Equal(8, position.Rank);
+    }
+
+    [Fact]
+    public void CreateFromCoords_Invalid_Should_Throw()
+    {
+        Assert.Throws<InvalidPositionException>(() =>
+            Position.CreateFromCoords(-1, 0));
+    }
+
+    [Fact]
+    public void TryCreateFromCoords_Valid_Should_Return_True()
+    {
+        var result = Position.TryCreateFromCoords(0, 0, out var position);
+
+        Assert.True(result);
+        Assert.Equal('a', position.File);
+        Assert.Equal(8, position.Rank);
+    }
+
+    [Fact]
+    public void TryCreateFromCoords_Invalid_Should_Return_False()
+    {
+        var result = Position.TryCreateFromCoords(-1, 0, out _);
+
+        Assert.False(result);
     }
 }
