@@ -15,12 +15,31 @@ public sealed class GameState
     public Position? EnPassantTarget { get; set; } = null;
     public List<Move> MoveHistory { get; init; } = [];
 
-    public void ApplyMove(Move move)
+    public GameState Clone()
     {
-        Board.MovePiece(move.From, move.To);
-        MoveHistory.Add(move);
-        CurrentTurn = CurrentTurn == PieceColor.White
+        return new GameState
+        {
+            Board = this.Board.Clone(),
+            CurrentTurn = this.CurrentTurn,
+            Result = this.Result,
+            EndReason = this.EndReason,
+            WhiteCanCastleKingSide = this.WhiteCanCastleKingSide,
+            WhiteCanCastleQueenSide = this.WhiteCanCastleQueenSide,
+            BlackCanCastleKingSide = this.BlackCanCastleKingSide,
+            BlackCanCastleQueenSide = this.BlackCanCastleQueenSide,
+            EnPassantTarget = this.EnPassantTarget,
+            MoveHistory = [.. this.MoveHistory]
+        };
+    }
+
+    public GameState ApplyMove(Move move)
+    {
+        var clone = Clone();
+        clone.Board.MovePiece(move.From, move.To);
+        clone.MoveHistory.Add(move);
+        clone.CurrentTurn = clone.CurrentTurn == PieceColor.White
             ? PieceColor.Black
             : PieceColor.White;
+        return clone;
     }
 }

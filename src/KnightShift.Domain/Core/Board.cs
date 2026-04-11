@@ -45,6 +45,16 @@ public class Board
         }
     }
 
+    public Board Clone()
+    {
+        var clone = new Board();
+        foreach (var (position, piece) in GetAllPieces())
+        {
+            clone.SetPiece(position, piece);
+        }
+        return clone;
+    }
+
     private static void ValidatePosition(Position position)
     {
         if (!position.IsValid())
