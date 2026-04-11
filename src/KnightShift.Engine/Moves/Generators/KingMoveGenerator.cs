@@ -1,4 +1,5 @@
 using KnightShift.Domain.Core;
+using KnightShift.Engine.Moves.Helpers;
 
 namespace KnightShift.Engine.Moves.Generators;
 
@@ -9,26 +10,8 @@ public class KingMoveGenerator : IPieceMoveGenerator
         (-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)
     ];
 
-    public IEnumerable<Move> GenerateMoves(GameState gameState, Piece piece, Position from)
+    public IEnumerable<Move> GenerateMoves(GameState state, Piece piece, Position from)
     {
-        var moves = new List<Move>();
-
-        foreach (var (dRow, dColumn) in Offsets)
-        {
-            var row = from.ToRow() + dRow;
-            var column = from.ToColumn() + dColumn;
-
-            if (!Position.TryCreateFromCoords(row, column, out var targetPosition))
-                continue;
-
-            var targetPiece = gameState.Board.GetPiece(targetPosition);
-
-            if (targetPiece == null || targetPiece.Color != piece.Color)
-            {
-                moves.Add(new Move(from, targetPosition));
-            }
-        }
-
-        return moves;
+        return StepMoveGenerator.GenerateStepMoves(state, piece, from, Offsets);
     }
 }
