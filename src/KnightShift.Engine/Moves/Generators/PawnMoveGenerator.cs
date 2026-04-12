@@ -34,7 +34,7 @@ public class PawnMoveGenerator : IPieceMoveGenerator
         if (!board.IsEmpty(forwardPosition))
             return;
 
-        moves.Add(new Move(from, forwardPosition));
+        AddPromotionAwareMove(piece, from, forwardPosition, moves);
 
         // Double move
         if (from.Rank == startRank)
@@ -72,8 +72,31 @@ public class PawnMoveGenerator : IPieceMoveGenerator
 
             if (targetPiece != null && targetPiece.Color != piece.Color)
             {
-                moves.Add(new Move(from, targetPosition));
+                AddPromotionAwareMove(piece, from, targetPosition, moves);
             }
+        }
+    }
+
+    private static void AddPromotionAwareMove(Piece piece, Position from, Position to, List<Move> moves)
+    {
+        int promotionRank = piece.Color == PieceColor.White ? 8 : 1;
+
+        if (to.Rank == promotionRank)
+        {
+            foreach (var promotion in new[]
+            {
+                PieceType.Queen,
+                PieceType.Rook,
+                PieceType.Bishop,
+                PieceType.Knight
+            })
+            {
+                moves.Add(new Move(from, to, Promotion: promotion));
+            }
+        }
+        else
+        {
+            moves.Add(new Move(from, to));
         }
     }
 

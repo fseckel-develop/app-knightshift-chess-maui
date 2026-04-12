@@ -42,6 +42,7 @@ public sealed class GameState
         UpdateEnPassantTarget(clone, move);
 
         clone.Board.MovePiece(move.From, move.To);
+        HandlePromotion(clone, move);
         clone.MoveHistory.Add(move);
         clone.SwitchTurn();
 
@@ -110,6 +111,21 @@ public sealed class GameState
         {
             state.EnPassantTarget = null;
         }
+    }
+
+    private static void HandlePromotion(GameState state, Move move)
+    {
+        if (move.Promotion is null)
+            return;
+
+        var piece = state.Board.GetPiece(move.To);
+        if (piece?.Type != PieceType.Pawn)
+        {
+            throw new InvalidBoardOperationException("Invalid promotion: no pawn at target.");
+        }
+
+        var promotedPiece = new Piece(move.Promotion.Value, piece.Color);
+        state.Board.SetPiece(move.To, promotedPiece);
     }
 
     private void SwitchTurn()
