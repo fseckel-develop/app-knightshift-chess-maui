@@ -8,45 +8,64 @@ public class PawnMoveGenerator : IPieceMoveGenerator
     public IEnumerable<Move> GenerateMoves(GameState state, Piece piece, Position from)
     {
         var moves = new List<Move>();
+
+        AddForwardMoves(state, piece, from, moves);
+        AddCaptureMoves(state, piece, from, moves);
+        AddEnPassantMoves(state, piece, from, moves);
+
+        return moves;
+    }
+
+    private static void AddForwardMoves(GameState state, Piece piece, Position from, List<Move> moves)
+    {
         var board = state.Board;
 
         int direction = piece.Color == PieceColor.White ? -1 : 1;
-        int startRank = piece.Color == PieceColor.White ?  2 : 7;
+        int startRank = piece.Color == PieceColor.White ? 2 : 7;
 
         var row = from.ToRow();
         var column = from.ToColumn();
 
-        // 1. Forward move
         var forwardRow = row + direction;
-        if (Position.TryCreateFromCoords(forwardRow, column, out var forwardPosition))
-        {
-            if (board.IsEmpty(forwardPosition))
-            {
-                moves.Add(new Move(from, forwardPosition));
 
-                // 2. Double move
-                if (from.Rank == startRank)
-                {
-                    var doubleRow = row + 2 * direction;
-                    if (Position.TryCreateFromCoords(doubleRow, column, out var doublePosition))
-                    {
-                        if (board.IsEmpty(doublePosition))
-                        {
-                            moves.Add(new Move(from, doublePosition));
-                        }
-                    }
-                }
-            }
+        if (!Position.TryCreateFromCoords(forwardRow, column, out var forwardPosition))
+            return;
+
+        if (!board.IsEmpty(forwardPosition))
+            return;
+
+        moves.Add(new Move(from, forwardPosition));
+
+        // Double move
+        if (from.Rank == startRank)
+        {
+            var doubleRow = row + 2 * direction;
+
+            if (!Position.TryCreateFromCoords(doubleRow, column, out var doublePosition))
+                return; 
+                
+            if (!board.IsEmpty(doublePosition))
+                return;
+            
+            moves.Add(new Move(from, doublePosition));
         }
+    }
 
-        // 3. Captures
-        var captureOffsets = new[] { -1, 1 };
+    private static void AddCaptureMoves(GameState state, Piece piece, Position from, List<Move> moves)
+    {
+        var board = state.Board;
 
-        foreach (var offset in captureOffsets)
+        int direction = piece.Color == PieceColor.White ? -1 : 1;
+
+        var row = from.ToRow();
+        var column = from.ToColumn();
+
+        foreach (var offset in new[] { -1, 1 })
         {
-            var captureColumn = column + offset;
+            var targetRow = row + direction;
+            var targetColumn = column + offset;
 
-            if (!Position.TryCreateFromCoords(forwardRow, captureColumn, out var targetPosition))
+            if (!Position.TryCreateFromCoords(targetRow, targetColumn, out var targetPosition))
                 continue;
 
             var targetPiece = board.GetPiece(targetPosition);
@@ -56,7 +75,31 @@ public class PawnMoveGenerator : IPieceMoveGenerator
                 moves.Add(new Move(from, targetPosition));
             }
         }
+    }
 
-        return moves;
+    private static void AddEnPassantMoves(GameState state, Piece piece, Position from, List<Move> moves)
+    {
+        if (state.EnPassantTarget is null)
+            return;
+
+        int direction = piece.Color == PieceColor.White ? -1 : 1;
+
+        var row = from.ToRow();
+        var column = from.ToColumn();
+
+        var targetRow = row + direction;
+
+        foreach (var offset in new[] { -1, 1 })
+        {
+            var targetColumn = column + offset;
+
+            if (!Position.TryCreateFromCoords(targetRow, targetColumn, out var targetPosition))
+                continue;
+
+            if (targetPosition == state.EnPassantTarget)
+            {
+                moves.Add(new Move(from, targetPosition, IsEnPassant: true));
+            }
+        }
     }
 }

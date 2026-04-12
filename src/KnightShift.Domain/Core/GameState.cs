@@ -38,6 +38,8 @@ public sealed class GameState
         var clone = Clone();
 
         HandleCastling(clone, move);
+        HandleEnPassant(clone, move);
+        UpdateEnPassantTarget(clone, move);
 
         clone.Board.MovePiece(move.From, move.To);
         clone.MoveHistory.Add(move);
@@ -67,6 +69,47 @@ public sealed class GameState
 
         state.Board.SetPiece(rookTo, rook);
         state.Board.SetPiece(rookFrom, null);
+    }
+
+    private static void HandleEnPassant(GameState state, Move move)
+    {
+        if (!move.IsEnPassant)
+            return;
+
+        int direction = state.CurrentTurn == PieceColor.White ? 1 : -1;
+
+        var capturedRow = move.To.ToRow() + direction;
+        var capturedColumn = move.To.ToColumn();
+        var capturedPosition = Position.CreateFromCoords(capturedRow, capturedColumn);
+
+        state.Board.SetPiece(capturedPosition, null);
+    }
+
+    private static void UpdateEnPassantTarget(GameState state, Move move)
+    {
+        var movingPiece = state.Board.GetPiece(move.From)
+            ?? throw new InvalidBoardOperationException("No piece at source.");
+    
+        if (movingPiece?.Type != PieceType.Pawn)
+        {
+            state.EnPassantTarget = null;
+            return;
+        }
+
+        int fromRow = move.From.ToRow();
+        int toRow = move.To.ToRow();
+
+        if (Math.Abs(fromRow - toRow) == 2)
+        {
+            int middleRow = (fromRow + toRow) / 2;
+            int column = move.From.ToColumn();
+
+            state.EnPassantTarget = Position.CreateFromCoords(middleRow, column);
+        }
+        else
+        {
+            state.EnPassantTarget = null;
+        }
     }
 
     private void SwitchTurn()
