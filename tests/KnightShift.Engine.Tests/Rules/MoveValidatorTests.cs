@@ -8,7 +8,7 @@ namespace KnightShift.Engine.Tests.Rules;
 
 public class MoveValidatorTests
 {
-    private readonly MoveValidator _validator = new(new CheckDetector());
+    private readonly MoveValidator _validator = EngineTestFactory.CreateMoveValidator();
 
     [Fact]
     public void Should_Return_True_For_Legal_Move()

@@ -2,14 +2,13 @@ using FluentAssertions;
 using KnightShift.Domain.Core;
 using KnightShift.Domain.Enums;
 using KnightShift.Engine.Moves;
-using KnightShift.Engine.Rules;
 using KnightShift.Engine.Tests.Helpers;
 
 namespace KnightShift.Engine.Tests.Moves;
 
 public class MoveGeneratorTests
 {
-    private readonly MoveGenerator _generator = new(new MoveValidator(new CheckDetector()));
+    private readonly MoveGenerator _generator = EngineTestFactory.CreateMoveGenerator();
 
     [Fact]
     public void Should_Generate_Moves_Only_For_Current_Player()

@@ -1,17 +1,13 @@
 using FluentAssertions;
 using KnightShift.Domain.Enums;
 using KnightShift.Engine.Evaluation;
-using KnightShift.Engine.Moves;
-using KnightShift.Engine.Rules;
 using KnightShift.Engine.Tests.Helpers;
 
 namespace KnightShift.Engine.Tests.Evaluation;
 
 public class GameResultEvaluatorTests
 {
-    private readonly GameResultEvaluator _evaluator = new(
-        new MoveGenerator(new MoveValidator(new CheckDetector())),
-        new CheckDetector());
+    private readonly GameResultEvaluator _evaluator = EngineTestFactory.CreateEvaluator();
 
     [Fact]
     public void Should_Set_Game_As_Ongoing_When_Moves_Available()

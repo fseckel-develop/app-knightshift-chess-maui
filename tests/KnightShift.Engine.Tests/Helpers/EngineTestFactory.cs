@@ -1,7 +1,6 @@
 using KnightShift.Engine.Rules;
 using KnightShift.Engine.Moves;
 using KnightShift.Engine.Evaluation;
-using KnightShift.Domain.Core;
 
 namespace KnightShift.Engine.Tests.Helpers;
 
