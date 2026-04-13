@@ -39,6 +39,7 @@ public sealed class GameState
 
         HandleCastling(clone, move);
         HandleEnPassant(clone, move);
+        UpdateCastlingRights(clone, move);
         UpdateEnPassantTarget(clone, move);
 
         clone.Board.MovePiece(move.From, move.To);
@@ -70,6 +71,58 @@ public sealed class GameState
 
         state.Board.SetPiece(rookTo, rook);
         state.Board.SetPiece(rookFrom, null);
+    }
+
+    private static void UpdateCastlingRights(GameState state, Move move)
+    {
+        var movingPiece = state.Board.GetPiece(move.From)
+            ?? throw new InvalidBoardOperationException("No piece at source.");
+            
+        var capturedPiece = state.Board.GetPiece(move.To);
+
+        if (movingPiece.Type == PieceType.King)
+        {
+            if (movingPiece.Color == PieceColor.White)
+            {
+                state.WhiteCanCastleKingSide = false;
+                state.WhiteCanCastleQueenSide = false;
+            }
+            else
+            {
+                state.BlackCanCastleKingSide = false;
+                state.BlackCanCastleQueenSide = false;
+            }
+        }
+
+        if (movingPiece.Type == PieceType.Rook)
+        {
+            DisableCastlingRightForRook(state, movingPiece.Color, move.From);
+        }
+        
+        if (capturedPiece?.Type == PieceType.Rook)
+        {
+            DisableCastlingRightForRook(state, capturedPiece.Color, move.To);
+        }
+    }
+
+    private static void DisableCastlingRightForRook(GameState state, PieceColor color, Position position)
+    {
+        if (color == PieceColor.White)
+        {
+            if (position.Rank == 1 && position.File == 'h')
+                state.WhiteCanCastleKingSide = false;
+
+            if (position.Rank == 1 && position.File == 'a')
+                state.WhiteCanCastleQueenSide = false;
+        }
+        else
+        {
+            if (position.Rank == 8 && position.File == 'h')
+                state.BlackCanCastleKingSide = false;
+
+            if (position.Rank == 8 && position.File == 'a')
+                state.BlackCanCastleQueenSide = false;
+        }
     }
 
     private static void HandleEnPassant(GameState state, Move move)
