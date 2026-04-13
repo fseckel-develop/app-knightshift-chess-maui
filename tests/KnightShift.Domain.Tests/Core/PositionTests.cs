@@ -83,4 +83,28 @@ public class PositionTests
 
         Assert.False(result);
     }
+
+    [Fact]
+    public void CreateFromAlgebraic_Should_Parse_Correctly()
+    {
+        var position = Position.CreateFromAlgebraic("e4");
+
+        Assert.Equal('e', position.File);
+        Assert.Equal(4, position.Rank);
+    }
+
+    [Fact]
+    public void CreateFromAlgebraic_Invalid_Should_Throw()
+    {
+        Assert.Throws<InvalidPositionException>(() =>
+            Position.CreateFromAlgebraic("z9"));
+    }
+
+    [Fact]
+    public void TryCreateFromAlgebraic_Invalid_Should_Return_False()
+    {
+        var result = Position.TryCreateFromAlgebraic("z9", out _);
+
+        Assert.False(result);
+    }
 }

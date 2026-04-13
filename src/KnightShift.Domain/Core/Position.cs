@@ -33,6 +33,35 @@ public sealed record Position
         }
     }
 
+    public static Position CreateFromAlgebraic(string notation)
+    {
+        if (string.IsNullOrWhiteSpace(notation) || notation.Length != 2)
+            throw new InvalidPositionException($"Invalid notation: {notation}");
+
+        char file = notation[0];
+        int rank = notation[1] - '0';
+        var position = new Position(file, rank);
+
+        if (!position.IsValid())
+            throw new InvalidPositionException($"Invalid position: {position}");
+
+        return position;
+    }
+
+    public static bool TryCreateFromAlgebraic(string notation, out Position position)
+    {
+        position = null!;
+        try
+        {
+            position = CreateFromAlgebraic(notation);
+            return true;
+        }
+        catch (InvalidPositionException)
+        {
+            return false;
+        }
+    }
+
     public bool IsValid() => File >= 'a' && File <= 'h' && Rank >= 1 && Rank <= 8;
 
     public int ToRow() => 8 - Rank;

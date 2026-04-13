@@ -10,16 +10,16 @@ public class GameStateTests
     {
         var game = new GameState();
 
-        var pos = new Position('e', 2);
-        game.Board.SetPiece(pos, new Piece(PieceType.Pawn, PieceColor.White));
+        var position = Position.CreateFromAlgebraic("e2");
+        game.Board.SetPiece(position, new Piece(PieceType.Pawn, PieceColor.White));
 
         var clone = game.Clone();
 
-        clone.Board.MovePiece(pos, new Position('e', 4));
+        clone.Board.MovePiece(position, Position.CreateFromAlgebraic("e4"));
 
         // original unchanged
-        Assert.NotNull(game.Board.GetPiece(pos));
-        Assert.Null(game.Board.GetPiece(new Position('e', 4)));
+        Assert.NotNull(game.Board.GetPiece(position));
+        Assert.Null(game.Board.GetPiece(Position.CreateFromAlgebraic("e4")));
     }
 
     [Fact]
@@ -27,8 +27,8 @@ public class GameStateTests
     {
         var game = new GameState();
 
-        var from = new Position('e', 2);
-        var to = new Position('e', 4);
+        var from = Position.CreateFromAlgebraic("e2");
+        var to = Position.CreateFromAlgebraic("e4");
 
         game.Board.SetPiece(from, new Piece(PieceType.Pawn, PieceColor.White));
 
@@ -44,8 +44,8 @@ public class GameStateTests
     {
         var game = new GameState();
 
-        var from = new Position('e', 2);
-        var to = new Position('e', 4);
+        var from = Position.CreateFromAlgebraic("e2");
+        var to = Position.CreateFromAlgebraic("e4");
 
         game.Board.SetPiece(from, new Piece(PieceType.Pawn, PieceColor.White));
 

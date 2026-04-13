@@ -10,7 +10,7 @@ public class BoardTests
     public void SetPiece_Then_GetPiece_Should_Return_Same_Piece()
     {
         var board = new Board();
-        var position = new Position('e', 4);
+        var position = Position.CreateFromAlgebraic("e4");
         var piece = new Piece(PieceType.Knight, PieceColor.White);
 
         board.SetPiece(position, piece);
@@ -24,7 +24,7 @@ public class BoardTests
     public void GetPiece_On_Empty_Square_Should_Return_Null()
     {
         var board = new Board();
-        var position = new Position('d', 4);
+        var position = Position.CreateFromAlgebraic("d4");
 
         var result = board.GetPiece(position);
 
@@ -35,8 +35,8 @@ public class BoardTests
     public void MovePiece_Should_Move_Piece_And_Clear_Source()
     {
         var board = new Board();
-        var from = new Position('e', 2);
-        var to = new Position('e', 4);
+        var from = Position.CreateFromAlgebraic("e2");
+        var to = Position.CreateFromAlgebraic("e4");
         var piece = new Piece(PieceType.Pawn, PieceColor.White);
 
         board.SetPiece(from, piece);
@@ -51,8 +51,8 @@ public class BoardTests
     public void MovePiece_Without_Piece_Should_Throw()
     {
         var board = new Board();
-        var from = new Position('a', 1);
-        var to = new Position('a', 2);
+        var from = Position.CreateFromAlgebraic("a1");
+        var to = Position.CreateFromAlgebraic("a2");
 
         Assert.Throws<PieceNotFoundException>(() => board.MovePiece(from, to));
     }
@@ -72,17 +72,17 @@ public class BoardTests
     {
         var board = new Board();
 
-        var p1 = new Position('a', 1);
-        var p2 = new Position('h', 8);
+        var position1 = Position.CreateFromAlgebraic("a1");
+        var position2 = Position.CreateFromAlgebraic("h8");
 
-        board.SetPiece(p1, new Piece(PieceType.Rook, PieceColor.White));
-        board.SetPiece(p2, new Piece(PieceType.King, PieceColor.Black));
+        board.SetPiece(position1, new Piece(PieceType.Rook, PieceColor.White));
+        board.SetPiece(position2, new Piece(PieceType.King, PieceColor.Black));
 
         var pieces = board.GetAllPieces().ToList();
 
         Assert.Equal(2, pieces.Count);
-        Assert.Contains(pieces, p => p.position == p1);
-        Assert.Contains(pieces, p => p.position == p2);
+        Assert.Contains(pieces, piece => piece.position == position1);
+        Assert.Contains(pieces, piece => piece.position == position2);
     }
 
     [Fact]
@@ -90,16 +90,16 @@ public class BoardTests
     {
         var board = new Board();
 
-        var p1 = new Position('a', 1);
-        var p2 = new Position('h', 8);
+        var position1 = Position.CreateFromAlgebraic("a1");
+        var position2 = Position.CreateFromAlgebraic("h8");
 
-        board.SetPiece(p1, new Piece(PieceType.Rook, PieceColor.White));
-        board.SetPiece(p2, new Piece(PieceType.King, PieceColor.Black));
+        board.SetPiece(position1, new Piece(PieceType.Rook, PieceColor.White));
+        board.SetPiece(position2, new Piece(PieceType.King, PieceColor.Black));
 
         var clone = board.Clone();
 
-        Assert.Equal(board.GetPiece(p1), clone.GetPiece(p1));
-        Assert.Equal(board.GetPiece(p2), clone.GetPiece(p2));
+        Assert.Equal(board.GetPiece(position1), clone.GetPiece(position1));
+        Assert.Equal(board.GetPiece(position2), clone.GetPiece(position2));
     }
 
     [Fact]
@@ -107,8 +107,8 @@ public class BoardTests
     {
         var board = new Board();
 
-        var from = new Position('e', 2);
-        var to = new Position('e', 4);
+        var from = Position.CreateFromAlgebraic("e2");
+        var to = Position.CreateFromAlgebraic("e4");
 
         board.SetPiece(from, new Piece(PieceType.Pawn, PieceColor.White));
 
