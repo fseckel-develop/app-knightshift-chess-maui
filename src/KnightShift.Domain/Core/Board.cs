@@ -1,5 +1,6 @@
-using KnightShift.Domain.Exceptions;
+using KnightShift.Domain.Enums;
 using KnightShift.Domain.Constants;
+using KnightShift.Domain.Exceptions;
 
 namespace KnightShift.Domain.Core;
 
@@ -19,7 +20,14 @@ public class Board
         _squares[position.ToRow(), position.ToColumn()] = piece;
     }
 
-    public bool IsEmpty(Position position) => GetPiece(position) is null;
+    public bool IsEmpty(Position position) 
+        => GetPiece(position) is null;
+
+    public bool HasEnemyPiece(Position target, PieceColor color)
+    {
+        var piece = GetPiece(target);
+        return piece != null && piece.Color != color;
+    }
 
     public void MovePiece(Position origin, Position target)
     {

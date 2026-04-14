@@ -61,9 +61,7 @@ public class PawnMoveGenerator : IPieceMoveGenerator
             if (!Position.TryCreateFromCoords(targetRow, targetColumn, out var targetPosition))
                 continue;
 
-            var targetPiece = board.GetPiece(targetPosition);
-
-            if (targetPiece != null && targetPiece.Color != piece.Color)
+            if (board.HasEnemyPiece(targetPosition, piece.Color))
             {
                 AddPromotionAwareMove(piece, origin, targetPosition, moves);
             }
