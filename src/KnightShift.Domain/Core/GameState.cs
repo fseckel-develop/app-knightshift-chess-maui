@@ -128,7 +128,7 @@ public sealed class GameState
         if (!move.IsEnPassant)
             return;
 
-        int direction = state.CurrentTurn == PieceColor.White ? 1 : -1;
+        int direction = Pawn.GetEnPassantCaptureDirection(state.CurrentTurn);
 
         var capturedRow = move.Target.ToRow() + direction;
         var capturedColumn = move.Target.ToColumn();
@@ -151,11 +151,10 @@ public sealed class GameState
         int originRow = move.Origin.ToRow();
         int targetRow = move.Target.ToRow();
 
-        if (Math.Abs(originRow - targetRow) == 2)
+        if (Pawn.IsDoubleMove(originRow, targetRow))
         {
             int middleRow = (originRow + targetRow) / 2;
             int column = move.Origin.ToColumn();
-
             state.EnPassantTarget = Position.CreateFromCoords(middleRow, column);
         }
         else
