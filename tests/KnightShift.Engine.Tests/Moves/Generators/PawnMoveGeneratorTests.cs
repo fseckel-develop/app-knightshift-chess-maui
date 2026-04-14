@@ -23,7 +23,7 @@ public class PawnMoveGeneratorTests
             new Piece(PieceType.Pawn, PieceColor.White),
             Position.CreateFromAlgebraic("e2"));
 
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("e3"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("e3"));
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class PawnMoveGeneratorTests
             new Piece(PieceType.Pawn, PieceColor.White),
             Position.CreateFromAlgebraic("e2"));
 
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("e4"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("e4"));
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class PawnMoveGeneratorTests
             new Piece(PieceType.Pawn, PieceColor.White),
             Position.CreateFromAlgebraic("e2"));
 
-        moves.Should().NotContain(move => move.To == Position.CreateFromAlgebraic("e4"));
+        moves.Should().NotContain(move => move.Target == Position.CreateFromAlgebraic("e4"));
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class PawnMoveGeneratorTests
             new Piece(PieceType.Pawn, PieceColor.White),
             Position.CreateFromAlgebraic("e3"));
 
-        moves.Should().NotContain(move => move.To == Position.CreateFromAlgebraic("e5"));
+        moves.Should().NotContain(move => move.Target == Position.CreateFromAlgebraic("e5"));
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class PawnMoveGeneratorTests
             new Piece(PieceType.Pawn, PieceColor.White),
             Position.CreateFromAlgebraic("e4"));
 
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("d5"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("d5"));
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public class PawnMoveGeneratorTests
             new Piece(PieceType.Pawn, PieceColor.White),
             Position.CreateFromAlgebraic("e4"));
 
-        moves.Should().NotContain(move => move.To == Position.CreateFromAlgebraic("d5"));
+        moves.Should().NotContain(move => move.Target == Position.CreateFromAlgebraic("d5"));
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class PawnMoveGeneratorTests
             new Piece(PieceType.Pawn, PieceColor.White),
             Position.CreateFromAlgebraic("e4"));
 
-        moves.Should().NotContain(move => move.To == Position.CreateFromAlgebraic("d5"));
+        moves.Should().NotContain(move => move.Target == Position.CreateFromAlgebraic("d5"));
     }
 
     [Fact]
@@ -157,8 +157,8 @@ public class PawnMoveGeneratorTests
             new Piece(PieceType.Pawn, PieceColor.White),
             Position.CreateFromAlgebraic("e4"));
 
-        moves.Should().NotContain(move => move.To == Position.CreateFromAlgebraic("e5"));
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("d5"));
+        moves.Should().NotContain(move => move.Target == Position.CreateFromAlgebraic("e5"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("d5"));
     }
 
     [Fact]
@@ -174,7 +174,7 @@ public class PawnMoveGeneratorTests
             new Piece(PieceType.Pawn, PieceColor.White),
             Position.CreateFromAlgebraic("e7"));
 
-        moves.Count(move => move.To == Position.CreateFromAlgebraic("e8")).Should().Be(4);
+        moves.Count(move => move.Target == Position.CreateFromAlgebraic("e8")).Should().Be(4);
     }
 
     [Fact]
@@ -191,7 +191,7 @@ public class PawnMoveGeneratorTests
             new Piece(PieceType.Pawn, PieceColor.White),
             Position.CreateFromAlgebraic("e7"));
 
-        moves.Count(move => move.To == Position.CreateFromAlgebraic("d8")).Should().Be(4);
+        moves.Count(move => move.Target == Position.CreateFromAlgebraic("d8")).Should().Be(4);
     }
 
     [Fact]

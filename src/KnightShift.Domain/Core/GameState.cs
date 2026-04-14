@@ -42,7 +42,7 @@ public sealed class GameState
         UpdateCastlingRights(clone, move);
         UpdateEnPassantTarget(clone, move);
 
-        clone.Board.MovePiece(move.From, move.To);
+        clone.Board.MovePiece(move.Origin, move.Target);
         HandlePromotion(clone, move);
         clone.MoveHistory.Add(move);
         clone.SwitchTurn();
@@ -55,30 +55,30 @@ public sealed class GameState
         if (!move.IsCastling)
             return;
 
-        bool isKingSide = move.To.ToColumn() == 6;
-        var rookFromColumn = isKingSide ? 7 : 0;
-        var rookToColumn = isKingSide ? 5 : 3;
+        bool isKingSide = move.Target.ToColumn() == 6;
+        var rookOriginColumn = isKingSide ? 7 : 0;
+        var rookTargetColumn = isKingSide ? 5 : 3;
 
-        int row = move.From.ToRow();
-        var rookFrom = Position.CreateFromCoords(row, rookFromColumn);
-        var rookTo = Position.CreateFromCoords(row, rookToColumn);
+        int row = move.Origin.ToRow();
+        var rookOrigin = Position.CreateFromCoords(row, rookOriginColumn);
+        var rookTarget = Position.CreateFromCoords(row, rookTargetColumn);
 
-        var rook = state.Board.GetPiece(rookFrom);
+        var rook = state.Board.GetPiece(rookOrigin);
         if (rook is null || rook.Type != PieceType.Rook || rook.Color != state.CurrentTurn)
         {
             throw new InvalidBoardOperationException("Invalid castling state.");
         }
 
-        state.Board.SetPiece(rookTo, rook);
-        state.Board.SetPiece(rookFrom, null);
+        state.Board.SetPiece(rookTarget, rook);
+        state.Board.SetPiece(rookOrigin, null);
     }
 
     private static void UpdateCastlingRights(GameState state, Move move)
     {
-        var movingPiece = state.Board.GetPiece(move.From)
+        var movingPiece = state.Board.GetPiece(move.Origin)
             ?? throw new InvalidBoardOperationException("No piece at source.");
             
-        var capturedPiece = state.Board.GetPiece(move.To);
+        var capturedPiece = state.Board.GetPiece(move.Target);
 
         if (movingPiece.Type == PieceType.King)
         {
@@ -96,12 +96,12 @@ public sealed class GameState
 
         if (movingPiece.Type == PieceType.Rook)
         {
-            DisableCastlingRightForRook(state, movingPiece.Color, move.From);
+            DisableCastlingRightForRook(state, movingPiece.Color, move.Origin);
         }
         
         if (capturedPiece?.Type == PieceType.Rook)
         {
-            DisableCastlingRightForRook(state, capturedPiece.Color, move.To);
+            DisableCastlingRightForRook(state, capturedPiece.Color, move.Target);
         }
     }
 
@@ -132,8 +132,8 @@ public sealed class GameState
 
         int direction = state.CurrentTurn == PieceColor.White ? 1 : -1;
 
-        var capturedRow = move.To.ToRow() + direction;
-        var capturedColumn = move.To.ToColumn();
+        var capturedRow = move.Target.ToRow() + direction;
+        var capturedColumn = move.Target.ToColumn();
         var capturedPosition = Position.CreateFromCoords(capturedRow, capturedColumn);
 
         state.Board.SetPiece(capturedPosition, null);
@@ -141,7 +141,7 @@ public sealed class GameState
 
     private static void UpdateEnPassantTarget(GameState state, Move move)
     {
-        var movingPiece = state.Board.GetPiece(move.From)
+        var movingPiece = state.Board.GetPiece(move.Origin)
             ?? throw new InvalidBoardOperationException("No piece at source.");
     
         if (movingPiece?.Type != PieceType.Pawn)
@@ -150,13 +150,13 @@ public sealed class GameState
             return;
         }
 
-        int fromRow = move.From.ToRow();
-        int toRow = move.To.ToRow();
+        int originRow = move.Origin.ToRow();
+        int targetRow = move.Target.ToRow();
 
-        if (Math.Abs(fromRow - toRow) == 2)
+        if (Math.Abs(originRow - targetRow) == 2)
         {
-            int middleRow = (fromRow + toRow) / 2;
-            int column = move.From.ToColumn();
+            int middleRow = (originRow + targetRow) / 2;
+            int column = move.Origin.ToColumn();
 
             state.EnPassantTarget = Position.CreateFromCoords(middleRow, column);
         }
@@ -171,14 +171,14 @@ public sealed class GameState
         if (move.Promotion is null)
             return;
 
-        var piece = state.Board.GetPiece(move.To);
+        var piece = state.Board.GetPiece(move.Target);
         if (piece?.Type != PieceType.Pawn)
         {
             throw new InvalidBoardOperationException("Invalid promotion: no pawn at target.");
         }
 
         var promotedPiece = new Piece(move.Promotion.Value, piece.Color);
-        state.Board.SetPiece(move.To, promotedPiece);
+        state.Board.SetPiece(move.Target, promotedPiece);
     }
 
     private void SwitchTurn()

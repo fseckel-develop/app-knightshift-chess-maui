@@ -22,14 +22,14 @@ public class QueenMoveGeneratorTests
             new Piece(PieceType.Queen, PieceColor.White),
             Position.CreateFromAlgebraic("d4"));
 
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("d1"));
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("d8"));
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("a4"));
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("h4"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("d1"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("d8"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("a4"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("h4"));
         
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("h8"));
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("g1"));
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("a1"));
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("a7"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("h8"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("g1"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("a1"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("a7"));
     }
 }

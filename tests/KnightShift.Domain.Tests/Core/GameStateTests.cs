@@ -27,15 +27,15 @@ public class GameStateTests
     {
         var game = new GameState();
 
-        var from = Position.CreateFromAlgebraic("e2");
-        var to = Position.CreateFromAlgebraic("e4");
+        var origin = Position.CreateFromAlgebraic("e2");
+        var target = Position.CreateFromAlgebraic("e4");
 
-        game.Board.SetPiece(from, new Piece(PieceType.Pawn, PieceColor.White));
+        game.Board.SetPiece(origin, new Piece(PieceType.Pawn, PieceColor.White));
 
-        var newState = game.ApplyMove(new Move(from, to));
+        var newState = game.ApplyMove(new Move(origin, target));
 
-        Assert.Null(newState.Board.GetPiece(from));
-        Assert.NotNull(newState.Board.GetPiece(to));
+        Assert.Null(newState.Board.GetPiece(origin));
+        Assert.NotNull(newState.Board.GetPiece(target));
         Assert.Equal(PieceColor.Black, newState.CurrentTurn);
     }
 
@@ -44,19 +44,19 @@ public class GameStateTests
     {
         var game = new GameState();
 
-        var from = Position.CreateFromAlgebraic("e2");
-        var to = Position.CreateFromAlgebraic("e4");
+        var origin = Position.CreateFromAlgebraic("e2");
+        var target = Position.CreateFromAlgebraic("e4");
 
-        game.Board.SetPiece(from, new Piece(PieceType.Pawn, PieceColor.White));
+        game.Board.SetPiece(origin, new Piece(PieceType.Pawn, PieceColor.White));
 
-        var newState = game.ApplyMove(new Move(from, to));
+        var newState = game.ApplyMove(new Move(origin, target));
 
         // original state unchanged
-        Assert.NotNull(game.Board.GetPiece(from));
-        Assert.Null(game.Board.GetPiece(to));
+        Assert.NotNull(game.Board.GetPiece(origin));
+        Assert.Null(game.Board.GetPiece(target));
 
         // new state updated
-        Assert.Null(newState.Board.GetPiece(from));
-        Assert.NotNull(newState.Board.GetPiece(to));
+        Assert.Null(newState.Board.GetPiece(origin));
+        Assert.NotNull(newState.Board.GetPiece(target));
     }
 }

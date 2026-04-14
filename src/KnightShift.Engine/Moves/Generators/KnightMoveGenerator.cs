@@ -6,8 +6,8 @@ namespace KnightShift.Engine.Moves.Generators;
 
 public class KnightMoveGenerator : IPieceMoveGenerator
 {
-    public IEnumerable<Move> GenerateMoves(GameState state, Piece piece, Position from)
+    public IEnumerable<Move> GenerateMoves(GameState state, Piece piece, Position origin)
     {
-        return StepMoveGenerator.GenerateStepMoves(state, piece, from, Offsets.Knight);
+        return StepMoveGenerator.GenerateStepMoves(state, piece, origin, Offsets.Knight);
     }
 }

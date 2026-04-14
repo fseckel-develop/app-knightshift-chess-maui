@@ -5,7 +5,7 @@ namespace KnightShift.Engine.Moves.Helpers;
 public static class SlidingMoveGenerator
 {
     public static IEnumerable<Move> GenerateSlidingMoves(
-        GameState state, Piece piece, Position from,
+        GameState state, Piece piece, Position origin,
         (int dRow, int dColumn)[] directions)
     {
         var moves = new List<Move>();
@@ -13,8 +13,8 @@ public static class SlidingMoveGenerator
 
         foreach (var (dRow, dColumn) in directions)
         {
-            int row = from.ToRow();
-            int column = from.ToColumn();
+            int row = origin.ToRow();
+            int column = origin.ToColumn();
 
             while (true)
             {
@@ -28,13 +28,13 @@ public static class SlidingMoveGenerator
 
                 if (targetPiece == null)
                 {
-                    moves.Add(new Move(from, targetPosition));
+                    moves.Add(new Move(origin, targetPosition));
                 }
                 else
                 {
                     if (targetPiece.Color != piece.Color)
                     {
-                        moves.Add(new Move(from, targetPosition));
+                        moves.Add(new Move(origin, targetPosition));
                     }
                     break;
                 }

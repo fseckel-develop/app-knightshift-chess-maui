@@ -26,7 +26,7 @@ public class StepMoveGeneratorTests
             Position.CreateFromAlgebraic("d4"),
             Offsets);
 
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("d5"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("d5"));
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class StepMoveGeneratorTests
             Position.CreateFromAlgebraic("d4"),
             Offsets);
 
-        moves.Should().NotContain(move => move.To == Position.CreateFromAlgebraic("d5"));
+        moves.Should().NotContain(move => move.Target == Position.CreateFromAlgebraic("d5"));
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class StepMoveGeneratorTests
             Position.CreateFromAlgebraic("d4"),
             Offsets);
 
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("d5"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("d5"));
     }
 
     [Fact]

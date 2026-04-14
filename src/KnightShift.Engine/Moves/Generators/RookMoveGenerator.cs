@@ -6,8 +6,8 @@ namespace KnightShift.Engine.Moves.Generators;
 
 public class RookMoveGenerator : IPieceMoveGenerator
 {
-    public IEnumerable<Move> GenerateMoves(GameState state, Piece piece, Position from)
+    public IEnumerable<Move> GenerateMoves(GameState state, Piece piece, Position origin)
     {
-        return SlidingMoveGenerator.GenerateSlidingMoves(state, piece, from, Directions.Rook);
+        return SlidingMoveGenerator.GenerateSlidingMoves(state, piece, origin, Directions.Rook);
     }
 }

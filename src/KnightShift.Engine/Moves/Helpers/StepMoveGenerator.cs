@@ -5,7 +5,7 @@ namespace KnightShift.Engine.Moves.Helpers;
 public static class StepMoveGenerator
 {
     public static IEnumerable<Move> GenerateStepMoves(
-        GameState state, Piece piece, Position from,
+        GameState state, Piece piece, Position origin,
         (int dRow, int dColumn)[] offsets)
     {
         var moves = new List<Move>();
@@ -13,8 +13,8 @@ public static class StepMoveGenerator
 
         foreach (var (dRow, dColumn) in offsets)
         {
-            var row = from.ToRow() + dRow;
-            var column = from.ToColumn() + dColumn;
+            var row = origin.ToRow() + dRow;
+            var column = origin.ToColumn() + dColumn;
 
             if (!Position.TryCreateFromCoords(row, column, out var targetPosition))
                 continue;
@@ -23,7 +23,7 @@ public static class StepMoveGenerator
 
             if (targetPiece == null || targetPiece.Color != piece.Color)
             {
-                moves.Add(new Move(from, targetPosition));
+                moves.Add(new Move(origin, targetPosition));
             }
         }
 

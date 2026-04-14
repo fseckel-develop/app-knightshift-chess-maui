@@ -35,26 +35,26 @@ public class BoardTests
     public void MovePiece_Should_Move_Piece_And_Clear_Source()
     {
         var board = new Board();
-        var from = Position.CreateFromAlgebraic("e2");
-        var to = Position.CreateFromAlgebraic("e4");
+        var origin = Position.CreateFromAlgebraic("e2");
+        var target = Position.CreateFromAlgebraic("e4");
         var piece = new Piece(PieceType.Pawn, PieceColor.White);
 
-        board.SetPiece(from, piece);
+        board.SetPiece(origin, piece);
 
-        board.MovePiece(from, to);
+        board.MovePiece(origin, target);
 
-        Assert.Null(board.GetPiece(from));
-        Assert.Equal(piece, board.GetPiece(to));
+        Assert.Null(board.GetPiece(origin));
+        Assert.Equal(piece, board.GetPiece(target));
     }
 
     [Fact]
     public void MovePiece_Without_Piece_Should_Throw()
     {
         var board = new Board();
-        var from = Position.CreateFromAlgebraic("a1");
-        var to = Position.CreateFromAlgebraic("a2");
+        var origin = Position.CreateFromAlgebraic("a1");
+        var target = Position.CreateFromAlgebraic("a2");
 
-        Assert.Throws<PieceNotFoundException>(() => board.MovePiece(from, to));
+        Assert.Throws<PieceNotFoundException>(() => board.MovePiece(origin, target));
     }
 
     [Fact]
@@ -107,21 +107,21 @@ public class BoardTests
     {
         var board = new Board();
 
-        var from = Position.CreateFromAlgebraic("e2");
-        var to = Position.CreateFromAlgebraic("e4");
+        var origin = Position.CreateFromAlgebraic("e2");
+        var target = Position.CreateFromAlgebraic("e4");
 
-        board.SetPiece(from, new Piece(PieceType.Pawn, PieceColor.White));
+        board.SetPiece(origin, new Piece(PieceType.Pawn, PieceColor.White));
 
         var clone = board.Clone();
 
-        clone.MovePiece(from, to);
+        clone.MovePiece(origin, target);
 
         // original unchanged
-        Assert.NotNull(board.GetPiece(from));
-        Assert.Null(board.GetPiece(to));
+        Assert.NotNull(board.GetPiece(origin));
+        Assert.Null(board.GetPiece(target));
 
         // clone updated
-        Assert.Null(clone.GetPiece(from));
-        Assert.NotNull(clone.GetPiece(to));
+        Assert.Null(clone.GetPiece(origin));
+        Assert.NotNull(clone.GetPiece(target));
     }
 }

@@ -5,26 +5,26 @@ namespace KnightShift.Engine.Moves.Generators;
 
 public class PawnMoveGenerator : IPieceMoveGenerator
 {
-    public IEnumerable<Move> GenerateMoves(GameState state, Piece piece, Position from)
+    public IEnumerable<Move> GenerateMoves(GameState state, Piece piece, Position origin)
     {
         var moves = new List<Move>();
 
-        AddForwardMoves(state, piece, from, moves);
-        AddCaptureMoves(state, piece, from, moves);
-        AddEnPassantMoves(state, piece, from, moves);
+        AddForwardMoves(state, piece, origin, moves);
+        AddCaptureMoves(state, piece, origin, moves);
+        AddEnPassantMoves(state, piece, origin, moves);
 
         return moves;
     }
 
-    private static void AddForwardMoves(GameState state, Piece piece, Position from, List<Move> moves)
+    private static void AddForwardMoves(GameState state, Piece piece, Position origin, List<Move> moves)
     {
         var board = state.Board;
 
         int direction = piece.Color == PieceColor.White ? -1 : 1;
         int startRank = piece.Color == PieceColor.White ? 2 : 7;
 
-        var row = from.ToRow();
-        var column = from.ToColumn();
+        var row = origin.ToRow();
+        var column = origin.ToColumn();
 
         var forwardRow = row + direction;
 
@@ -34,10 +34,10 @@ public class PawnMoveGenerator : IPieceMoveGenerator
         if (!board.IsEmpty(forwardPosition))
             return;
 
-        AddPromotionAwareMove(piece, from, forwardPosition, moves);
+        AddPromotionAwareMove(piece, origin, forwardPosition, moves);
 
         // Double move
-        if (from.Rank == startRank)
+        if (origin.Rank == startRank)
         {
             var doubleRow = row + 2 * direction;
 
@@ -47,18 +47,18 @@ public class PawnMoveGenerator : IPieceMoveGenerator
             if (!board.IsEmpty(doublePosition))
                 return;
             
-            moves.Add(new Move(from, doublePosition));
+            moves.Add(new Move(origin, doublePosition));
         }
     }
 
-    private static void AddCaptureMoves(GameState state, Piece piece, Position from, List<Move> moves)
+    private static void AddCaptureMoves(GameState state, Piece piece, Position origin, List<Move> moves)
     {
         var board = state.Board;
 
         int direction = piece.Color == PieceColor.White ? -1 : 1;
 
-        var row = from.ToRow();
-        var column = from.ToColumn();
+        var row = origin.ToRow();
+        var column = origin.ToColumn();
 
         foreach (var offset in new[] { -1, 1 })
         {
@@ -72,16 +72,16 @@ public class PawnMoveGenerator : IPieceMoveGenerator
 
             if (targetPiece != null && targetPiece.Color != piece.Color)
             {
-                AddPromotionAwareMove(piece, from, targetPosition, moves);
+                AddPromotionAwareMove(piece, origin, targetPosition, moves);
             }
         }
     }
 
-    private static void AddPromotionAwareMove(Piece piece, Position from, Position to, List<Move> moves)
+    private static void AddPromotionAwareMove(Piece piece, Position origin, Position target, List<Move> moves)
     {
         int promotionRank = piece.Color == PieceColor.White ? 8 : 1;
 
-        if (to.Rank == promotionRank)
+        if (target.Rank == promotionRank)
         {
             foreach (var promotion in new[]
             {
@@ -91,24 +91,24 @@ public class PawnMoveGenerator : IPieceMoveGenerator
                 PieceType.Knight
             })
             {
-                moves.Add(new Move(from, to, Promotion: promotion));
+                moves.Add(new Move(origin, target, Promotion: promotion));
             }
         }
         else
         {
-            moves.Add(new Move(from, to));
+            moves.Add(new Move(origin, target));
         }
     }
 
-    private static void AddEnPassantMoves(GameState state, Piece piece, Position from, List<Move> moves)
+    private static void AddEnPassantMoves(GameState state, Piece piece, Position origin, List<Move> moves)
     {
         if (state.EnPassantTarget is null)
             return;
 
         int direction = piece.Color == PieceColor.White ? -1 : 1;
 
-        var row = from.ToRow();
-        var column = from.ToColumn();
+        var row = origin.ToRow();
+        var column = origin.ToColumn();
 
         var targetRow = row + direction;
 
@@ -121,7 +121,7 @@ public class PawnMoveGenerator : IPieceMoveGenerator
 
             if (targetPosition == state.EnPassantTarget)
             {
-                moves.Add(new Move(from, targetPosition, IsEnPassant: true));
+                moves.Add(new Move(origin, targetPosition, IsEnPassant: true));
             }
         }
     }

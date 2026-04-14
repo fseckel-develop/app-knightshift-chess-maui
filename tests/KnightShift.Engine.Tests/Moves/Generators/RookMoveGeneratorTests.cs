@@ -22,9 +22,9 @@ public class RookMoveGeneratorTests
             new Piece(PieceType.Rook, PieceColor.White),
             Position.CreateFromAlgebraic("d4"));
 
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("d1"));
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("d8"));
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("a4"));
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("h4"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("d1"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("d8"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("a4"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("h4"));
     }
 }

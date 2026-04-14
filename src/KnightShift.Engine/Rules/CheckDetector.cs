@@ -34,7 +34,7 @@ public class CheckDetector
             var generator = _generators[piece.Type];
             var moves = generator.GenerateMoves(state, piece, position);
 
-            if (moves.Any(move => move.To == kingPosition))
+            if (moves.Any(move => move.Target == kingPosition))
                 return true;
         }
 

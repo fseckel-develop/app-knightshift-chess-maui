@@ -55,6 +55,6 @@ public class KnightMoveGeneratorTests
             new Piece(PieceType.Knight, PieceColor.White),
             Position.CreateFromAlgebraic("d4"));
 
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("e6"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("e6"));
     }
 }

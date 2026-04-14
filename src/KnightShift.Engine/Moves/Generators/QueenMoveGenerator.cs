@@ -6,8 +6,8 @@ namespace KnightShift.Engine.Moves.Generators;
 
 public class QueenMoveGenerator : IPieceMoveGenerator
 {
-    public IEnumerable<Move> GenerateMoves(GameState state, Piece piece, Position from)
+    public IEnumerable<Move> GenerateMoves(GameState state, Piece piece, Position origin)
     {
-        return SlidingMoveGenerator.GenerateSlidingMoves(state, piece, from, Directions.Queen);
+        return SlidingMoveGenerator.GenerateSlidingMoves(state, piece, origin, Directions.Queen);
     }
 }

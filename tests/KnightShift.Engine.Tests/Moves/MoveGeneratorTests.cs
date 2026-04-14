@@ -21,7 +21,7 @@ public class MoveGeneratorTests
 
         var moves = _generator.GenerateMoves(state);
 
-        moves.Should().OnlyContain(move => state.Board.GetPiece(move.From)!.Color == PieceColor.White);
+        moves.Should().OnlyContain(move => state.Board.GetPiece(move.Origin)!.Color == PieceColor.White);
     }
 
     [Fact]
@@ -37,8 +37,8 @@ public class MoveGeneratorTests
         var moves = _generator.GenerateMoves(state);
 
         moves.Should().NotContain(move =>
-            move.From == Position.CreateFromAlgebraic("e2") &&
-            move.To == Position.CreateFromAlgebraic("f2"));
+            move.Origin == Position.CreateFromAlgebraic("e2") &&
+            move.Target == Position.CreateFromAlgebraic("f2"));
     }
 
     [Fact]
@@ -52,8 +52,8 @@ public class MoveGeneratorTests
 
         var moves = _generator.GenerateMoves(state);
 
-        moves.Should().Contain(move => move.From == Position.CreateFromAlgebraic("e1"));
-        moves.Should().Contain(move => move.From == Position.CreateFromAlgebraic("d4"));
+        moves.Should().Contain(move => move.Origin == Position.CreateFromAlgebraic("e1"));
+        moves.Should().Contain(move => move.Origin == Position.CreateFromAlgebraic("d4"));
     }
 
     [Fact]

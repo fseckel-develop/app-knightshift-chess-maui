@@ -21,11 +21,11 @@ public class Board
 
     public bool IsEmpty(Position position) => GetPiece(position) is null;
 
-    public void MovePiece(Position from, Position to)
+    public void MovePiece(Position origin, Position target)
     {
-        var piece = GetPiece(from) ?? throw new PieceNotFoundException($"No piece at {from}");
-        SetPiece(to, piece);
-        SetPiece(from, null);
+        var piece = GetPiece(origin) ?? throw new PieceNotFoundException($"No piece at {origin}");
+        SetPiece(target, piece);
+        SetPiece(origin, null);
     }
 
     public IEnumerable<(Position position, Piece piece)> GetAllPieces()

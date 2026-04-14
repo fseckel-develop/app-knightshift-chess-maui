@@ -25,7 +25,7 @@ public class KingMoveGeneratorTests
             new Piece(PieceType.King, PieceColor.White),
             Position.CreateFromAlgebraic("e1"));
 
-        moves.Should().Contain(move => move.IsCastling && move.To == Position.CreateFromAlgebraic("g1"));
+        moves.Should().Contain(move => move.IsCastling && move.Target == Position.CreateFromAlgebraic("g1"));
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class KingMoveGeneratorTests
             new Piece(PieceType.King, PieceColor.White),
             Position.CreateFromAlgebraic("e1"));
 
-        moves.Should().Contain(move => move.IsCastling && move.To == Position.CreateFromAlgebraic("c1"));
+        moves.Should().Contain(move => move.IsCastling && move.Target == Position.CreateFromAlgebraic("c1"));
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class KingMoveGeneratorTests
             new Piece(PieceType.King, PieceColor.White),
             Position.CreateFromAlgebraic("e1"));
 
-        moves.Should().NotContain(move => move.IsCastling && move.To == Position.CreateFromAlgebraic("c1"));
+        moves.Should().NotContain(move => move.IsCastling && move.Target == Position.CreateFromAlgebraic("c1"));
     }
 
     [Fact]
@@ -120,8 +120,8 @@ public class KingMoveGeneratorTests
             new Piece(PieceType.King, PieceColor.White),
             Position.CreateFromAlgebraic("e1"));
 
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("g1"));
-        moves.Should().Contain(move => move.To == Position.CreateFromAlgebraic("c1"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("g1"));
+        moves.Should().Contain(move => move.Target == Position.CreateFromAlgebraic("c1"));
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class KingMoveGeneratorTests
             new Piece(PieceType.King, PieceColor.Black),
             Position.CreateFromAlgebraic("e8"));
 
-        moves.Should().Contain(move => move.IsCastling && move.To == Position.CreateFromAlgebraic("g8"));
+        moves.Should().Contain(move => move.IsCastling && move.Target == Position.CreateFromAlgebraic("g8"));
     }
 
     [Fact]
@@ -157,7 +157,7 @@ public class KingMoveGeneratorTests
             new Piece(PieceType.King, PieceColor.Black),
             Position.CreateFromAlgebraic("e8"));
 
-        moves.Should().Contain(move => move.IsCastling && move.To == Position.CreateFromAlgebraic("c8"));
+        moves.Should().Contain(move => move.IsCastling && move.Target == Position.CreateFromAlgebraic("c8"));
     }
 
     [Fact]
