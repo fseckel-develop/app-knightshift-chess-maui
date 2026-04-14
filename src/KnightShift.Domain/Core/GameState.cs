@@ -55,13 +55,12 @@ public sealed class GameState
         if (!move.IsCastling)
             return;
 
-        bool isKingSide = move.Target.ToColumn() == 6;
-        var rookOriginColumn = isKingSide ? 7 : 0;
-        var rookTargetColumn = isKingSide ? 5 : 3;
+        var side = move.Target.ToColumn() == Castling.KingSide.KingTargetColumn
+            ? CastlingSide.KingSide
+            : CastlingSide.QueenSide;
 
-        int row = move.Origin.ToRow();
-        var rookOrigin = Position.CreateFromCoords(row, rookOriginColumn);
-        var rookTarget = Position.CreateFromCoords(row, rookTargetColumn);
+        var rookOrigin = Castling.GetRookOrigin(state.CurrentTurn, side);
+        var rookTarget = Castling.GetRookTarget(state.CurrentTurn, side);
 
         var rook = state.Board.GetPiece(rookOrigin);
         if (rook is null || rook.Type != PieceType.Rook || rook.Color != state.CurrentTurn)
@@ -107,20 +106,19 @@ public sealed class GameState
 
     private static void DisableCastlingRightForRook(GameState state, PieceColor color, Position position)
     {
-        if (color == PieceColor.White)
+        if (position == Castling.GetRookOrigin(color, CastlingSide.KingSide))
         {
-            if (position.Rank == 1 && position.File == 'h')
+            if (color == PieceColor.White)
                 state.WhiteCanCastleKingSide = false;
-
-            if (position.Rank == 1 && position.File == 'a')
-                state.WhiteCanCastleQueenSide = false;
-        }
-        else
-        {
-            if (position.Rank == 8 && position.File == 'h')
+            else
                 state.BlackCanCastleKingSide = false;
+        }
 
-            if (position.Rank == 8 && position.File == 'a')
+        if (position == Castling.GetRookOrigin(color, CastlingSide.QueenSide))
+        {
+            if (color == PieceColor.White)
+                state.WhiteCanCastleQueenSide = false;
+            else
                 state.BlackCanCastleQueenSide = false;
         }
     }
