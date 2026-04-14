@@ -19,11 +19,8 @@ public class PawnMoveGenerator : IPieceMoveGenerator
     {
         var board = state.Board;
 
-        int direction = Pawn.GetForwardDirection(piece.Color);
-
-        var row = origin.ToRow();
-        var column = origin.ToColumn();
-
+        var direction = Pawn.GetForwardDirection(piece.Color);
+        var (row, column) = Position.ToCoords(origin);
         var forwardRow = row + direction;
 
         if (!Position.TryCreateFromCoords(forwardRow, column, out var forwardPosition))
@@ -53,10 +50,8 @@ public class PawnMoveGenerator : IPieceMoveGenerator
     {
         var board = state.Board;
 
-        int direction = Pawn.GetForwardDirection(piece.Color);
-
-        var row = origin.ToRow();
-        var column = origin.ToColumn();
+        var direction = Pawn.GetForwardDirection(piece.Color);
+        var (row, column) = Position.ToCoords(origin);
 
         foreach (var columnOffset in Pawn.CaptureOffsets)
         {
@@ -96,10 +91,7 @@ public class PawnMoveGenerator : IPieceMoveGenerator
             return;
 
         var direction = Pawn.GetForwardDirection(piece.Color);
-
-        var row = origin.ToRow();
-        var column = origin.ToColumn();
-
+        var (row, column) = Position.ToCoords(origin);
         var targetRow = row + direction;
 
         foreach (var columnOffset in Pawn.CaptureOffsets)

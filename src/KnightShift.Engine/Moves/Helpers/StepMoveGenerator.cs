@@ -10,11 +10,12 @@ public static class StepMoveGenerator
     {
         var moves = new List<Move>();
         var board = state.Board;
+        var (originRow, originColumn) = Position.ToCoords(origin);
 
         foreach (var (dRow, dColumn) in offsets)
         {
-            var row = origin.ToRow() + dRow;
-            var column = origin.ToColumn() + dColumn;
+            var row = originRow + dRow;
+            var column = originColumn + dColumn;
 
             if (!Position.TryCreateFromCoords(row, column, out var targetPosition))
                 continue;

@@ -73,5 +73,8 @@ public sealed record Position
 
     public int ToColumn() => File - BoardDimensions.MinFile;
 
+    public static (int row, int column) ToCoords(Position position)
+        => (position.ToRow(), position.ToColumn());
+
     public override string ToString() => $"{File}{Rank}";
 }

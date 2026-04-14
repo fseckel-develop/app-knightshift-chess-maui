@@ -13,8 +13,7 @@ public static class SlidingMoveGenerator
 
         foreach (var (dRow, dColumn) in directions)
         {
-            int row = origin.ToRow();
-            int column = origin.ToColumn();
+            var (row, column) = Position.ToCoords(origin);
 
             while (true)
             {
