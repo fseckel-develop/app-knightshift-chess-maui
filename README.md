@@ -10,27 +10,34 @@
 **KnightShift** is planned to be a cross-platform chess application built with **.NET MAUI**, powered by a custom-designed chess engine implemented in C#.
 
 The project will combine:
-- ♟️ **Chess engine development** (move generation, rules, AI)
-- 🧱 **Clean architecture & domain modeling**
-- 📱 **Cross-platform UI with .NET MAUI**
+- ♟️ **Chess engine development** (rules, move generation, validation, evaluation, AI)
+- 🧱 **Clean architecture & domain-driven design**
+- 📱 **Multiple frontends** (Cross-platform GUI with .NET MAUI, console-based CLI)
 
 The goal is to create a **fully structured, extensible chess system** — from engine to UI — with a strong focus on **clarity, maintainability, and long-term evolution**.
 
 ---
-## ✨ Key Features (Planned)
+## ✨ Key Features
 
-#### Engine
-- Full legal move generation
+#### Engine (Implemented)
+- Full pseudo-legal move generation (all pieces)
+- Legal move validation (king safety)
 - Check, checkmate, and stalemate detection
 - Special rules (castling, en passant, promotion)
-- Minimax-based AI with alpha-beta pruning
+- Minimax-based AI with alpha-beta pruning (planned)
 - Configurable difficulty
 
-#### Application
+#### Mobile Application (Planned)
 - Interactive chessboard UI (.NET MAUI)
 - Human vs AI gameplay
 - Move highlighting and history
 - Game state persistence
+
+#### CLI (Planned)
+- Console-based chess interface
+- Board rendering in terminal
+- Move input via algebraic notation
+- Useful for debugging and engine interaction
 
 #### Backend
 - Game storage & replay
@@ -46,19 +53,53 @@ The project follows a **layered architecture** with strong separation of concern
 ```text
 KnightShift
 │
-├── Domain          → chess rules & core models
-├── Engine          → move generation, validation, AI
-├── Application     → orchestration / use cases
-├── Infrastructure  → persistence & external systems
-├── API             → backend endpoints
-└── Mobile          → .NET MAUI frontend
+├── Domain          → core models (Board, Piece, Move, GameState)
+├── Engine          → move generation, validation, rules, evaluation
+├── Application     → orchestration / use cases (planned)
+├── Infrastructure  → persistence & external systems (planned)
+├── API             → backend endpoints (planned)
+├── CLI             → console frontend (planned)
+└── MAUI            → .NET MAUI frontend (planned)
 ```
 
 #### Design Principles
-- Clear separation between state, rules, and execution
-- Domain-first design with chess-native modeling (files/ranks)
-- Modular engine (piece-based move generation)
-- Testability and extensibility as core goals
+- Domain-first design with chess-native modeling
+- Separation of:
+  - state (Domain)
+  - behavior (Engine)
+  - orchestration (Application)
+  - presentation (CLI/MAUI)
+- Modular move generation (per piece)
+- High testability and explicit rule enforcement
+
+---
+## 🧪 Testing
+
+The project uses a layered testing approach, mirroring the architecture.
+
+#### Domain Tests
+- Board behavior
+- Position validation & algebraic notation
+- GameState state transitions
+- Domain invariants and exceptions
+
+#### Engine Tests
+- Move generation
+  - Step-based (king, knight)
+  - Sliding (rook, bishop, queen)
+  - Pawn logic (movement, capture, promotion, en passant)
+  - MoveGenerator orchestration
+- Rules
+  - Check detection
+  - Move validation (illegal moves)
+- Evaluation
+  - Checkmate detection
+  - Stalemate detection
+
+This ensures:
+- Clear separation of responsibilities
+- High confidence in correctness
+- Maintainable and extensible test structure
 
 ---
 ## 🚧 Current Status
@@ -67,61 +108,66 @@ This project is under active refactoring and continuous development.
 
 #### ✅ Implemented
 - Core domain model:
-  - Board representation
-  - Piece, Move, Position
-  - GameState
-- Domain-specific exceptions
-- Initial project structure
+	- Board, Position (algebraic notation)
+	- Piece, Move
+	- GameState (including castling & en passant state)
+- Engine:
+	- Step-based movement (king, knight)
+	- Sliding movement (rook, bishop, queen)
+	- Pawn logic (movement, capture, promotion, en passant)
+	- Move validation (prevents illegal moves)
+	- Check detection
+	- Game result evaluation (checkmate, stalemate)
+- Comprehensive unit test suite (xUnit + FluentAssertions)
 
 #### 🔄 In Progress
-- Move generation architecture
-- Piece-specific move logic
-- Rule validation pipeline
+- attack maps
+- Engine refinements & edge-case handling
+- Improved test tooling (e.g., FEN-based setup)
+- Introduction of chess constants for clarity
 
 #### ⏳ Planned
-- AI (minimax + alpha-beta)
+- Minimax AI with alpha-beta pruning
+- CLI frontend
 - MAUI UI implementation
 - Backend API & persistence
 - Game replay & analysis tools
-
----
-## 🧪 Testing (Planned)
-
-Unit tests for:
-- move generation
-- rule validation
-- edge cases (checkmate, stalemate)
-
-Integration tests for:
-- full game simulations
 
 ---
 ## 🎯 Purpose
 
 This project is intended to:
 - demonstrate advanced C# and .NET architecture
-- showcase algorithmic problem solving (chess engine)
+- showcase algorithmic problem solving (chess engine design)
 - build a real-world MAUI application
 - serve as a long-term learning and experimentation platform
 
 ---
 ## 🗺 Roadmap
 
-#### Phase 1 – Engine Foundation
-- piece move generation
+#### Phase 1 – Engine Foundation ✅
+- move generation
 - legality validation
 - check detection
+- game result evaluation
 
-#### Phase 2 – Playable Game
-- AI opponent
-- MAUI board UI
+#### Phase 2 – Search & AI
+- attach maps
+- move scoring
+- minimax implementation
+- alpha-beta pruning
+- evaluation heuristics
+
+#### Phase 3 – Playable Interface
+- CLI interface
+- MAUI UI
 - game loop
 
-#### Phase 3 – Persistence & Backend
+#### Phase 4 – Persistence & Backend
 - save/load games
 - API layer
 
-#### Phase 4 – Advanced Features
+#### Phase 5 – Advanced Features
 - analysis mode
 - puzzle system
 - multiplayer
