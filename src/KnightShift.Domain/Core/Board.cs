@@ -1,10 +1,11 @@
 using KnightShift.Domain.Exceptions;
+using KnightShift.Domain.Constants;
 
 namespace KnightShift.Domain.Core;
 
 public class Board
 {
-    private readonly Piece?[,] _squares = new Piece?[8, 8];
+    private readonly Piece?[,] _squares = new Piece?[BoardDimensions.Size, BoardDimensions.Size];
 
     public Piece? GetPiece(Position position)
     {
@@ -29,9 +30,9 @@ public class Board
 
     public IEnumerable<(Position position, Piece piece)> GetAllPieces()
     {
-        for (int row = 0; row < 8; row++)
+        for (int row = 0; row < BoardDimensions.Size; row++)
         {
-            for (int column = 0; column < 8; column++)
+            for (int column = 0; column < BoardDimensions.Size; column++)
             {
                 var piece = _squares[row, column];
                 if (piece is not null)

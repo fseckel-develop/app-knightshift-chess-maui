@@ -1,3 +1,4 @@
+using KnightShift.Domain.Constants;
 using KnightShift.Domain.Exceptions;
 
 namespace KnightShift.Domain.Core;
@@ -10,11 +11,11 @@ public sealed record Position
 {
     public static Position CreateFromCoords(int row, int column)
     {
-        if (row < 0 || row >= 8 || column < 0 || column >= 8)
+        if (row < 0 || row >= BoardDimensions.Size || column < 0 || column >= BoardDimensions.Size)
             throw new InvalidPositionException($"Invalid coordinates: ({row}, {column})");
 
-        var file = (char)('a' + column);
-        var rank = 8 - row;
+        var file = (char)(BoardDimensions.MinFile + column);
+        var rank = BoardDimensions.MaxRank - row;
 
         return new Position(file, rank);
     }
@@ -62,11 +63,15 @@ public sealed record Position
         }
     }
 
-    public bool IsValid() => File >= 'a' && File <= 'h' && Rank >= 1 && Rank <= 8;
+    public bool IsValid() => 
+        File >= BoardDimensions.MinFile && 
+        File <= BoardDimensions.MaxFile && 
+        Rank >= BoardDimensions.MinRank && 
+        Rank <= BoardDimensions.MaxRank;
 
-    public int ToRow() => 8 - Rank;
+    public int ToRow() => BoardDimensions.MaxRank - Rank;
 
-    public int ToColumn() => File - 'a';
+    public int ToColumn() => File - BoardDimensions.MinFile;
 
     public override string ToString() => $"{File}{Rank}";
 }
