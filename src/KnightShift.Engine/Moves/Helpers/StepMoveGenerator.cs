@@ -20,9 +20,7 @@ public static class StepMoveGenerator
             if (!Position.TryCreateFromCoords(row, column, out var targetPosition))
                 continue;
 
-            var targetPiece = board.GetPiece(targetPosition);
-
-            if (targetPiece == null || targetPiece.Color != piece.Color)
+            if (board.IsEmpty(targetPosition) || board.HasEnemyPiece(targetPosition, piece.Color))
             {
                 moves.Add(new Move(origin, targetPosition));
             }

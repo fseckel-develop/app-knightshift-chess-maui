@@ -23,15 +23,13 @@ public static class SlidingMoveGenerator
                 if (!Position.TryCreateFromCoords(row, column, out var targetPosition))
                     break;
 
-                var targetPiece = board.GetPiece(targetPosition);
-
-                if (targetPiece == null)
+                if (board.IsEmpty(targetPosition))
                 {
                     moves.Add(new Move(origin, targetPosition));
                 }
                 else
                 {
-                    if (targetPiece.Color != piece.Color)
+                    if (board.HasEnemyPiece(targetPosition, piece.Color))
                     {
                         moves.Add(new Move(origin, targetPosition));
                     }
