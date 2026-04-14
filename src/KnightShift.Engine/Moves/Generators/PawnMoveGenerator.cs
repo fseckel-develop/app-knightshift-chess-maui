@@ -1,5 +1,4 @@
 using KnightShift.Domain.Core;
-using KnightShift.Domain.Enums;
 
 namespace KnightShift.Engine.Moves.Generators;
 
@@ -20,8 +19,7 @@ public class PawnMoveGenerator : IPieceMoveGenerator
     {
         var board = state.Board;
 
-        int direction = piece.Color == PieceColor.White ? -1 : 1;
-        int startRank = piece.Color == PieceColor.White ? 2 : 7;
+        int direction = Pawn.GetForwardDirection(piece.Color);
 
         var row = origin.ToRow();
         var column = origin.ToColumn();
@@ -37,9 +35,9 @@ public class PawnMoveGenerator : IPieceMoveGenerator
         AddPromotionAwareMove(piece, origin, forwardPosition, moves);
 
         // Double move
-        if (origin.Rank == startRank)
+        if (origin.Rank == Pawn.GetStartRank(piece.Color))
         {
-            var doubleRow = row + 2 * direction;
+            var doubleRow = forwardRow + direction;
 
             if (!Position.TryCreateFromCoords(doubleRow, column, out var doublePosition))
                 return; 
@@ -55,15 +53,15 @@ public class PawnMoveGenerator : IPieceMoveGenerator
     {
         var board = state.Board;
 
-        int direction = piece.Color == PieceColor.White ? -1 : 1;
+        int direction = Pawn.GetForwardDirection(piece.Color);
 
         var row = origin.ToRow();
         var column = origin.ToColumn();
 
-        foreach (var offset in new[] { -1, 1 })
+        foreach (var columnOffset in Pawn.CaptureOffsets)
         {
             var targetRow = row + direction;
-            var targetColumn = column + offset;
+            var targetColumn = column + columnOffset;
 
             if (!Position.TryCreateFromCoords(targetRow, targetColumn, out var targetPosition))
                 continue;
@@ -79,17 +77,9 @@ public class PawnMoveGenerator : IPieceMoveGenerator
 
     private static void AddPromotionAwareMove(Piece piece, Position origin, Position target, List<Move> moves)
     {
-        int promotionRank = piece.Color == PieceColor.White ? 8 : 1;
-
-        if (target.Rank == promotionRank)
+        if (target.Rank == Pawn.GetPromotionRank(piece.Color))
         {
-            foreach (var promotion in new[]
-            {
-                PieceType.Queen,
-                PieceType.Rook,
-                PieceType.Bishop,
-                PieceType.Knight
-            })
+            foreach (var promotion in Pawn.PromotionPieces)
             {
                 moves.Add(new Move(origin, target, Promotion: promotion));
             }
@@ -105,16 +95,16 @@ public class PawnMoveGenerator : IPieceMoveGenerator
         if (state.EnPassantTarget is null)
             return;
 
-        int direction = piece.Color == PieceColor.White ? -1 : 1;
+        var direction = Pawn.GetForwardDirection(piece.Color);
 
         var row = origin.ToRow();
         var column = origin.ToColumn();
 
         var targetRow = row + direction;
 
-        foreach (var offset in new[] { -1, 1 })
+        foreach (var columnOffset in Pawn.CaptureOffsets)
         {
-            var targetColumn = column + offset;
+            var targetColumn = column + columnOffset;
 
             if (!Position.TryCreateFromCoords(targetRow, targetColumn, out var targetPosition))
                 continue;
