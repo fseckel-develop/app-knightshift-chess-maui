@@ -8,16 +8,21 @@ public static class BoardPrinter
 {
     public static void Print(GameState state)
     {
+        Print(state, Console.Out);
+    }
+
+    public static void Print(GameState state, TextWriter writer)
+    {
         var board = state.Board;
         var lastMove = state.MoveHistory.LastOrDefault();
 
-        Console.WriteLine();
-        PrintTopBorder();
+        writer.WriteLine();
+        PrintTopBorder(writer);
 
         for (int row = 0; row < BoardDimensions.Size; row++)
         {
             int rank = BoardDimensions.MaxRank - row;
-            Console.Write($"{rank} │");
+            writer.Write($"{rank} │");
 
             for (int column = 0; column < BoardDimensions.Size; column++)
             {
@@ -27,17 +32,17 @@ public static class BoardPrinter
                 bool isDarkSquare = IsDarkSquare(row, column);
                 bool isHighlighted = IsHighlighted(position, lastMove);
 
-                PrintSquare(piece, isDarkSquare, isHighlighted);
+                PrintSquare(writer, piece, isDarkSquare, isHighlighted);
             }
 
-            Console.WriteLine("│");
+            writer.WriteLine("│");
 
             if (row < BoardDimensions.Size - 1)
-                PrintMiddleBorder();
+                PrintMiddleBorder(writer);
         }
 
-        PrintBottomBorder();
-        PrintFiles();
+        PrintBottomBorder(writer);
+        PrintFiles(writer);
     }
 
     private static bool IsDarkSquare(int row, int col)
@@ -51,27 +56,35 @@ public static class BoardPrinter
             && (position == lastMove.Origin || position == lastMove.Target);
     }
 
-    private static void PrintSquare(Piece? piece, bool isDarkSquare, bool highlight)
+    private static void PrintSquare(TextWriter writer, Piece? piece, bool isDarkSquare, bool highlight)
     {
-        SetBackgroundColor(isDarkSquare, highlight);
+        if (UseConsoleColors(writer))
+            SetBackgroundColor(isDarkSquare, highlight);
 
-        Console.Write(" ");
+        writer.Write(" ");
 
         if (piece is null)
         {
-            Console.Write(" ");
+            writer.Write(" ");
         }
         else
         {
-            SetPieceColor(piece);
-            Console.Write(GetUnicodeSymbol(piece));
+            if (UseConsoleColors(writer))
+                SetPieceColor(piece);
+            
+            writer.Write(GetUnicodeSymbol(piece));
         }
 
-        Console.Write(" ");
+        writer.Write(" ");
 
-        Console.ResetColor();
-        Console.Write("│");
+        if (UseConsoleColors(writer))
+            Console.ResetColor();
+
+        writer.Write("│");
     }
+
+    private static bool UseConsoleColors(TextWriter writer)
+        => ReferenceEquals(writer, Console.Out);
 
     private static void SetBackgroundColor(bool isDarkSquare, bool highlight)
     {
@@ -108,28 +121,28 @@ public static class BoardPrinter
         };
     }
 
-    private static void PrintTopBorder()
+    private static void PrintTopBorder(TextWriter writer)
     {
-        Console.WriteLine("  ┌───┬───┬───┬───┬───┬───┬───┬───┐");
+        writer.WriteLine("  ┌───┬───┬───┬───┬───┬───┬───┬───┐");
     }
 
-    private static void PrintMiddleBorder()
+    private static void PrintMiddleBorder(TextWriter writer)
     {
-        Console.WriteLine("  ├───┼───┼───┼───┼───┼───┼───┼───┤");
+        writer.WriteLine("  ├───┼───┼───┼───┼───┼───┼───┼───┤");
     }
 
-    private static void PrintBottomBorder()
+    private static void PrintBottomBorder(TextWriter writer)
     {
-        Console.WriteLine("  └───┴───┴───┴───┴───┴───┴───┴───┘");
+        writer.WriteLine("  └───┴───┴───┴───┴───┴───┴───┴───┘");
     }
 
-    private static void PrintFiles()
+    private static void PrintFiles(TextWriter writer)
     {
-        Console.Write("    ");
+        writer.Write("    ");
         for (char file = BoardDimensions.MinFile; file <= BoardDimensions.MaxFile; file++)
         {
-            Console.Write($" {file} ");
+            writer.Write($" {file} ");
         }
-        Console.WriteLine();
+        writer.WriteLine();
     }
 }
