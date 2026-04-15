@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KnightShift.Domain\KnightShift.Domain.csproj" />
+    <ProjectReference Include="..\KnightShift.Application\KnightShift.Application.csproj" />
   </ItemGroup>
 
 </Project>
