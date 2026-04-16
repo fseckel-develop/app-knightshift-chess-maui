@@ -1,3 +1,4 @@
+using KnightShift.Application.Abstractions;
 using KnightShift.Application.Interfaces;
 using KnightShift.Application.DTOs;
 using KnightShift.Application.Mappers;
@@ -12,14 +13,19 @@ public class GameService : IGameService
 {
     private readonly IMoveGenerator _moveGenerator;
     private readonly GameResultEvaluator _evaluator;
+    private readonly IGameStateFactory _factory;
     private GameState _state;
 
-    public GameService(IMoveGenerator moveGenerator, GameResultEvaluator evaluator)
+    public GameService(
+        IMoveGenerator moveGenerator, 
+        GameResultEvaluator evaluator, 
+        IGameStateFactory factory)
     {
         _moveGenerator = moveGenerator;
         _evaluator = evaluator;
+        _factory = factory;
 
-        _state = CreateInitialState();
+        _state = _factory.CreateInitialState();
     }
 
     public GameStateDto GetState()
@@ -50,16 +56,7 @@ public class GameService : IGameService
 
     public void StartNewGame()
     {
-        _state = CreateInitialState();
-    }
-
-    private static GameState CreateInitialState()
-    {
-        var state = new GameState();
-
-        // TODO: plug in proper initial setup
-
-        return state;
+        _state = _factory.CreateInitialState();
     }
 
     public bool IsGameOver()
