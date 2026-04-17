@@ -14,16 +14,19 @@ public class GameService : IGameService
     private readonly IMoveGenerator _moveGenerator;
     private readonly GameResultEvaluator _evaluator;
     private readonly IGameStateFactory _factory;
+    private readonly IGameStateSerializer _serializer;
     private GameState _state;
 
     public GameService(
-        IMoveGenerator moveGenerator, 
-        GameResultEvaluator evaluator, 
-        IGameStateFactory factory)
+        IMoveGenerator moveGenerator,
+        GameResultEvaluator evaluator,
+        IGameStateFactory factory,
+        IGameStateSerializer serializer)
     {
         _moveGenerator = moveGenerator;
         _evaluator = evaluator;
         _factory = factory;
+        _serializer = serializer;
 
         _state = _factory.CreateInitialState();
     }
@@ -57,6 +60,17 @@ public class GameService : IGameService
     public void StartNewGame()
     {
         _state = _factory.CreateInitialState();
+    }
+
+    public void LoadState(string serializedState)
+    {
+        _state = _serializer.Deserialize(serializedState);
+        _evaluator.Evaluate(_state);
+    }
+    
+    public string ExportState()
+    {
+        return _serializer.Serialize(_state);
     }
 
     public bool IsGameOver()
