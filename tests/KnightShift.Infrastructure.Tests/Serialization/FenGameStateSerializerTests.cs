@@ -1,17 +1,19 @@
-using KnightShift.Infrastructure.Notation;
+using KnightShift.Infrastructure.Serialization;
 using KnightShift.Domain.Core;
 using KnightShift.Domain.Enums;
 
-namespace KnightShift.Infrastructure.Tests.Notation;
+namespace KnightShift.Infrastructure.Tests.Serialization;
 
-public class FenParserTests
+public class FenGameStateSerializerTests
 {
+    private readonly FenGameStateSerializer _serialzer = new();
+
     [Fact]
-    public void FromFen_Should_Parse_StartingPosition()
+    public void Deserialize_Should_Parse_StartingPosition()
     {
         var fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -";
 
-        var state = FenParser.FromFen(fen);
+        var state = _serialzer.Deserialize(fen);
 
         Assert.Equal(PieceColor.White, state.CurrentTurn);
         Assert.True(state.WhiteCanCastleKingSide);
@@ -22,11 +24,11 @@ public class FenParserTests
     }
 
     [Fact]
-    public void FromFen_Should_Parse_ComplexPosition()
+    public void Deserialize_Should_Parse_ComplexPosition()
     {
         var fen = "r1bqkbnr/pppp1ppp/2n5/4p3/3P4/2N5/PPP1PPPP/R1BQKBNR w KQkq -";
 
-        var state = FenParser.FromFen(fen);
+        var state = _serialzer.Deserialize(fen);
 
         // Spot checks
         Assert.NotNull(state.Board.GetPiece(Position.CreateFromAlgebraic("e5"))); // black pawn
@@ -37,38 +39,38 @@ public class FenParserTests
     }
 
     [Fact]
-    public void FromFen_Should_Throw_On_Invalid_RankCount()
+    public void Deserialize_Should_Throw_On_Invalid_RankCount()
     {
         var fen = "8/8/8/8/8/8/8 w - -"; // only 7 ranks
 
-        Assert.Throws<ArgumentException>(() => FenParser.FromFen(fen));
+        Assert.Throws<ArgumentException>(() => _serialzer.Deserialize(fen));
     }
     
     [Fact]
-    public void FromFen_Should_Throw_On_Invalid_Piece()
+    public void Deserialize_Should_Throw_On_Invalid_Piece()
     {
         var fen = "8/8/8/8/8/8/8/X7 w - -";
 
-        Assert.Throws<ArgumentException>(() => FenParser.FromFen(fen));
+        Assert.Throws<ArgumentException>(() => _serialzer.Deserialize(fen));
     }
 
     [Fact]
-    public void ToFen_Should_Roundtrip_Correctly()
+    public void Serialize_Should_Roundtrip_Correctly()
     {
         var fen = "8/8/8/8/8/8/8/8 w - -";
 
-        var state = FenParser.FromFen(fen);
-        var result = FenParser.ToFen(state);
+        var state = _serialzer.Deserialize(fen);
+        var result = _serialzer.Serialize(state);
 
         Assert.Equal(fen, result);
     }
 
     [Fact]
-    public void FromFen_Should_Handle_NoCastlingRights()
+    public void Deserialize_Should_Handle_NoCastlingRights()
     {
         var fen = "8/8/8/8/8/8/8/8 w - -";
 
-        var state = FenParser.FromFen(fen);
+        var state = _serialzer.Deserialize(fen);
 
         Assert.False(state.WhiteCanCastleKingSide);
         Assert.False(state.WhiteCanCastleQueenSide);
@@ -77,11 +79,11 @@ public class FenParserTests
     }
 
     [Fact]
-    public void FromFen_Should_Parse_PartialCastlingRights()
+    public void Deserialize_Should_Parse_PartialCastlingRights()
     {
         var fen = "8/8/8/8/8/8/8/8 w Kq -";
 
-        var state = FenParser.FromFen(fen);
+        var state = _serialzer.Deserialize(fen);
 
         Assert.True(state.WhiteCanCastleKingSide);
         Assert.False(state.WhiteCanCastleQueenSide);
@@ -90,44 +92,44 @@ public class FenParserTests
     }
 
     [Fact]
-    public void ToFen_Should_Preserve_CastlingRights()
+    public void Serialize_Should_Preserve_CastlingRights()
     {
         var fen = "8/8/8/8/8/8/8/8 w Kq -";
 
-        var state = FenParser.FromFen(fen);
-        var result = FenParser.ToFen(state);
+        var state = _serialzer.Deserialize(fen);
+        var result = _serialzer.Serialize(state);
 
         Assert.Equal(fen, result);
     }
 
     [Fact]
-    public void FromFen_Should_Parse_EnPassant_Target()
+    public void Deserialize_Should_Parse_EnPassant_Target()
     {
         var fen = "8/8/8/3pP3/8/8/8/8 w - d6";
 
-        var state = FenParser.FromFen(fen);
+        var state = _serialzer.Deserialize(fen);
 
         Assert.NotNull(state.EnPassantTarget);
         Assert.Equal("d6", state.EnPassantTarget!.ToString());
     }
 
     [Fact]
-    public void FromFen_Should_Handle_No_EnPassant()
+    public void Deserialize_Should_Handle_No_EnPassant()
     {
         var fen = "8/8/8/8/8/8/8/8 w - -";
 
-        var state = FenParser.FromFen(fen);
+        var state = _serialzer.Deserialize(fen);
 
         Assert.Null(state.EnPassantTarget);
     }
 
     [Fact]
-    public void ToFen_Should_Preserve_EnPassant()
+    public void Serialize_Should_Preserve_EnPassant()
     {
         var fen = "8/8/8/3pP3/8/8/8/8 w - d6";
 
-        var state = FenParser.FromFen(fen);
-        var result = FenParser.ToFen(state);
+        var state = _serialzer.Deserialize(fen);
+        var result = _serialzer.Serialize(state);
 
         Assert.Equal(fen, result);
     }

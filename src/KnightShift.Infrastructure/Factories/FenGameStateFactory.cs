@@ -1,14 +1,20 @@
 using KnightShift.Application.Abstractions;
 using KnightShift.Domain.Core;
-using KnightShift.Infrastructure.Notation;
 
 namespace KnightShift.Infrastructure.Factories;
 
 public class FenGameStateFactory : IGameStateFactory
 {
-    private static readonly string StartPositionFen =
+    private readonly IGameStateSerializer _serializer;
+
+    private readonly string StartPositionFen =
         "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -";
 
+    public FenGameStateFactory(IGameStateSerializer serializer)
+    {
+        _serializer = serializer;
+    }
+
     public GameState CreateInitialState()
-        => FenParser.FromFen(StartPositionFen);
+        => _serializer.Deserialize(StartPositionFen);
 }
