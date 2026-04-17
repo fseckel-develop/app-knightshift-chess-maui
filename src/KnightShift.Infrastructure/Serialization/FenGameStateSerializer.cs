@@ -1,12 +1,13 @@
+using KnightShift.Application.Abstractions;
 using KnightShift.Domain.Core;
 using KnightShift.Domain.Enums;
 using KnightShift.Domain.Constants;
 
-namespace KnightShift.Infrastructure.Notation;
+namespace KnightShift.Infrastructure.Serialization;
 
-public static class FenParser
+public class FenGameStateSerializer : IGameStateSerializer
 {
-    public static GameState FromFen(string fen)
+    public GameState Deserialize(string fen)
     {
         var parts = fen.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
@@ -21,6 +22,16 @@ public static class FenParser
         state.EnPassantTarget = ParseEnPassant(parts[3]);
 
         return state;
+    }
+
+    public string Serialize(GameState state)
+    {
+        var board = BuildBoardString(state);
+        var turn = state.CurrentTurn == PieceColor.White ? "w" : "b";
+        var castling = BuildCastlingString(state);
+        var enPassant = state.EnPassantTarget?.ToString() ?? "-";
+        
+        return $"{board} {turn} {castling} {enPassant}";
     }
 
     private static void ParseBoard(string boardPart, GameState state)
@@ -76,7 +87,7 @@ public static class FenParser
         {
             "w" => PieceColor.White,
             "b" => PieceColor.Black,
-            _ => throw new ArgumentException("Invalid FEN: active color.")
+            _ => throw new ArgumentException($"Invalid FEN: {part} is not a valid active color.")
         };
     }
 
@@ -93,16 +104,6 @@ public static class FenParser
         return part == "-"
             ? null
             : Position.CreateFromAlgebraic(part);
-    }
-
-    public static string ToFen(GameState state)
-    {
-        var board = BuildBoardString(state);
-        var turn = state.CurrentTurn == PieceColor.White ? "w" : "b";
-        var castling = BuildCastlingString(state);
-        var enPassant = state.EnPassantTarget?.ToString() ?? "-";
-        
-        return $"{board} {turn} {castling} {enPassant}";
     }
 
     private static string BuildBoardString(GameState state)
@@ -156,7 +157,7 @@ public static class FenParser
             PieceType.Rook   => 'r',
             PieceType.Queen  => 'q',
             PieceType.King   => 'k',
-            _ => throw new ArgumentException("Invalid piece type")
+            _ => throw new ArgumentException($"Invalid FEN: {piece.Type} is not a valid piece type.")
         };
 
         return piece.Color == PieceColor.White ? char.ToUpper(symbol) : symbol;

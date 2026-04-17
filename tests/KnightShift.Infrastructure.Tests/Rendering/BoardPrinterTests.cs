@@ -1,15 +1,16 @@
 using KnightShift.Infrastructure.Rendering;
-using KnightShift.Infrastructure.Notation;
-using KnightShift.Domain.Core;
+using KnightShift.Infrastructure.Serialization;
 
 namespace KnightShift.Infrastructure.Tests.Rendering;
 
 public class BoardPrinterTests
 {
+    private readonly FenGameStateSerializer _serializer = new();
+
     [Fact]
     public void Print_Should_Render_EmptyBoard_With_Grid()
     {
-        var state = FenParser.FromFen("8/8/8/8/8/8/8/8 w - -");
+        var state = _serializer.Deserialize("8/8/8/8/8/8/8/8 w - -");
         var writer = new StringWriter();
 
         BoardPrinter.Print(state, writer);
@@ -24,7 +25,7 @@ public class BoardPrinterTests
     [Fact]
     public void Print_Should_Render_File_Labels()
     {
-        var state = FenParser.FromFen("8/8/8/8/8/8/8/8 w - -");
+        var state = _serializer.Deserialize("8/8/8/8/8/8/8/8 w - -");
         var writer = new StringWriter();
 
         BoardPrinter.Print(state, writer);
@@ -37,7 +38,7 @@ public class BoardPrinterTests
     [Fact]
     public void Print_Should_Render_Rank_Labels()
     {
-        var state = FenParser.FromFen("8/8/8/8/8/8/8/8 w - -");
+        var state = _serializer.Deserialize("8/8/8/8/8/8/8/8 w - -");
         var writer = new StringWriter();
 
         BoardPrinter.Print(state, writer);
@@ -50,7 +51,7 @@ public class BoardPrinterTests
     [Fact]
     public void Print_Should_Render_Pieces()
     {
-        var state = FenParser.FromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -");
+        var state = _serializer.Deserialize("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -");
         var writer = new StringWriter();
 
         BoardPrinter.Print(state, writer);
