@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnightShift.Application", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnightShift.Application.Tests", "tests\KnightShift.Application.Tests\KnightShift.Application.Tests.csproj", "{5236DFEE-BEF0-4B9F-83DB-486AAF1C5640}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnightShift.Cli", "src\KnightShift.Cli\KnightShift.Cli.csproj", "{1B46C433-9EAA-4B7F-AFF3-F74B54BC43D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -129,6 +131,18 @@ Global
 		{5236DFEE-BEF0-4B9F-83DB-486AAF1C5640}.Release|x64.Build.0 = Release|Any CPU
 		{5236DFEE-BEF0-4B9F-83DB-486AAF1C5640}.Release|x86.ActiveCfg = Release|Any CPU
 		{5236DFEE-BEF0-4B9F-83DB-486AAF1C5640}.Release|x86.Build.0 = Release|Any CPU
+		{1B46C433-9EAA-4B7F-AFF3-F74B54BC43D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B46C433-9EAA-4B7F-AFF3-F74B54BC43D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B46C433-9EAA-4B7F-AFF3-F74B54BC43D3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1B46C433-9EAA-4B7F-AFF3-F74B54BC43D3}.Debug|x64.Build.0 = Debug|Any CPU
+		{1B46C433-9EAA-4B7F-AFF3-F74B54BC43D3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1B46C433-9EAA-4B7F-AFF3-F74B54BC43D3}.Debug|x86.Build.0 = Debug|Any CPU
+		{1B46C433-9EAA-4B7F-AFF3-F74B54BC43D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B46C433-9EAA-4B7F-AFF3-F74B54BC43D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B46C433-9EAA-4B7F-AFF3-F74B54BC43D3}.Release|x64.ActiveCfg = Release|Any CPU
+		{1B46C433-9EAA-4B7F-AFF3-F74B54BC43D3}.Release|x64.Build.0 = Release|Any CPU
+		{1B46C433-9EAA-4B7F-AFF3-F74B54BC43D3}.Release|x86.ActiveCfg = Release|Any CPU
+		{1B46C433-9EAA-4B7F-AFF3-F74B54BC43D3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,5 +156,6 @@ Global
 		{D9EB7278-C9E0-4B2D-8C8F-4E8A9685A9C8} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{FEE3E47E-3C2C-4B7D-AF16-CF5C60B4BD73} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{5236DFEE-BEF0-4B9F-83DB-486AAF1C5640} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{1B46C433-9EAA-4B7F-AFF3-F74B54BC43D3} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal
