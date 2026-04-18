@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using KnightShift.Application.Abstractions;
+using KnightShift.Application.Contracts.Interfaces;
 using KnightShift.Infrastructure.Factories;
 using KnightShift.Infrastructure.Serialization;
 

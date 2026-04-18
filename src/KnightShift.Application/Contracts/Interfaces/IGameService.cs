@@ -1,6 +1,6 @@
-using KnightShift.Application.DTOs;
+using KnightShift.Application.Contracts.DTOs;
 
-namespace KnightShift.Application.Interfaces;
+namespace KnightShift.Application.Contracts.Interfaces;
 
 public interface IGameService
 {

@@ -1,4 +1,4 @@
-using KnightShift.Application.Abstractions;
+using KnightShift.Application.Contracts.Interfaces;
 using KnightShift.Domain.Core;
 using KnightShift.Domain.Enums;
 

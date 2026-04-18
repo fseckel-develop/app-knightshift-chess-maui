@@ -1,4 +1,4 @@
-namespace KnightShift.Application.DTOs;
+namespace KnightShift.Application.Contracts.DTOs;
 
 public class MoveDto
 {
