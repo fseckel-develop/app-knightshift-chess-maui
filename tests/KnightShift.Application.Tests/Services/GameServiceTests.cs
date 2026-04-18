@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using KnightShift.Application.Interfaces;
-using KnightShift.Application.DTOs;
+using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.Contracts.DTOs;
 using KnightShift.Application.DependencyInjection;
 using KnightShift.Infrastructure.DependencyInjection;
 using KnightShift.Engine.DependencyInjection;

@@ -1,6 +1,6 @@
 using KnightShift.Domain.Core;
 
-namespace KnightShift.Application.Abstractions;
+namespace KnightShift.Application.Contracts.Interfaces;
 
 public interface IMoveSerializer
 {

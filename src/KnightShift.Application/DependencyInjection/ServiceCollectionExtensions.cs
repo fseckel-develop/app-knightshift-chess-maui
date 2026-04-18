@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using KnightShift.Application.Interfaces;
+using KnightShift.Application.Contracts.Interfaces;
 using KnightShift.Application.Services;
 
 namespace KnightShift.Application.DependencyInjection;

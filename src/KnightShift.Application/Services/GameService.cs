@@ -1,6 +1,5 @@
-using KnightShift.Application.Abstractions;
-using KnightShift.Application.Interfaces;
-using KnightShift.Application.DTOs;
+using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.Contracts.DTOs;
 using KnightShift.Application.Mappers;
 using KnightShift.Domain.Core;
 using KnightShift.Domain.Enums;

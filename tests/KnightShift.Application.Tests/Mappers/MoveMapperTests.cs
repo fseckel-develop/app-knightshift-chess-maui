@@ -1,5 +1,5 @@
 using KnightShift.Application.Mappers;
-using KnightShift.Application.DTOs;
+using KnightShift.Application.Contracts.DTOs;
 using KnightShift.Domain.Enums;
 
 namespace KnightShift.Application.Tests.Mappers;

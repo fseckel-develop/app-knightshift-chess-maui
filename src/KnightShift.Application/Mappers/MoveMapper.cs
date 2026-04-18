@@ -1,4 +1,4 @@
-using KnightShift.Application.DTOs;
+using KnightShift.Application.Contracts.DTOs;
 using KnightShift.Domain.Core;
 using KnightShift.Domain.Enums;
 
