@@ -24,6 +24,20 @@ public class UciMoveSerializer : IMoveSerializer
         return new Move(origin, target, Promotion: promotion);
     }
 
+    public bool TryDeserialize(string uci, out Move? move)
+    {
+        try
+        {
+            move = Deserialize(uci);
+            return true;
+        }
+        catch
+        {
+            move = null;
+            return false;
+        }
+    }
+
     public string Serialize(Move move)
     {
         var uci = $"{move.Origin}{move.Target}";

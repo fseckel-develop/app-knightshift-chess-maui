@@ -24,6 +24,20 @@ public class FenGameStateSerializer : IGameStateSerializer
         return state;
     }
 
+    public bool TryDeserialize(string fen, out GameState? state)
+    {
+        try
+        {
+            state = Deserialize(fen);
+            return true;
+        }
+        catch
+        {
+            state = null;
+            return false;
+        }
+    }
+
     public string Serialize(GameState state)
     {
         var board = BuildBoardString(state);
