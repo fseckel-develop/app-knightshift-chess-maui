@@ -14,47 +14,33 @@ public static class GameStateMapper
             Board = MapBoard(state),
             CurrentTurn = state.CurrentTurn.ToString(),
             Result = state.Result.ToString(),
-            EndReason = state.EndReason.ToString()
+            EndReason = state.EndReason.ToString(),
+            
+            LastMove = state.MoveHistory.LastOrDefault() is Move lastMove 
+                ? MoveMapper.ToDto(lastMove) 
+                : null,
         };
     }
 
-    private static string[][] MapBoard(GameState state)
+    private static PieceDto?[,] MapBoard(GameState state)
     {
-        var board = new string[BoardDimensions.Size][];
+        var board = new PieceDto?[BoardDimensions.Size, BoardDimensions.Size];
 
         for (int row = 0; row < BoardDimensions.Size; row++)
         {
-            board[row] = new string[BoardDimensions.Size];
-
             for (int column = 0; column < BoardDimensions.Size; column++)
             {
                 var position = Position.CreateFromCoords(row, column);
                 var piece = state.Board.GetPiece(position);
 
-                board[row][column] = piece is null
-                    ? "."
-                    : MapPiece(piece);
+                board[row, column] = piece is null ? null : new PieceDto
+                {
+                    Type = piece.Type,
+                    Color = piece.Color
+                };
             }
         }
 
         return board;
-    }
-
-    private static string MapPiece(Piece piece)
-    {
-        var symbol = piece.Type switch
-        {
-            PieceType.Pawn => "p",
-            PieceType.Knight => "n",
-            PieceType.Bishop => "b",
-            PieceType.Rook => "r",
-            PieceType.Queen => "q",
-            PieceType.King => "k",
-            _ => "?"
-        };
-
-        return piece.Color == PieceColor.White
-            ? symbol.ToUpper()
-            : symbol;
     }
 }
