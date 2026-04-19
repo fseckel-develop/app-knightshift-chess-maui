@@ -8,10 +8,17 @@ public static class MoveMapper
 {
     public static MoveDto ToDto(Move move)
     {
+        var (originRow, originColumn) = Position.ToCoords(move.Origin);
+        var (targetRow, targetColumn) = Position.ToCoords(move.Target);
+
         return new MoveDto
         {
             Origin = move.Origin.ToString(),
             Target = move.Target.ToString(),
+            OriginRow = originRow,
+            OriginColumn = originColumn,
+            TargetRow = targetRow,
+            TargetColumn = targetColumn,
             Promotion = move.Promotion?.ToString(),
             IsCastling = move.IsCastling,
             IsEnPassant = move.IsEnPassant
