@@ -1,20 +1,20 @@
-using KnightShift.Domain.Core;
-using KnightShift.Domain.Enums;
+using KnightShift.Application.Contracts.DTOs;
 using KnightShift.Domain.Constants;
+using KnightShift.Domain.Enums;
 
-namespace KnightShift.Infrastructure.Rendering;
+namespace KnightShift.Cli.Rendering;
 
 public static class BoardPrinter
 {
-    public static void Print(GameState state)
+    public static void Print(GameStateDto state)
     {
         Print(state, Console.Out);
     }
 
-    public static void Print(GameState state, TextWriter writer)
+    public static void Print(GameStateDto state, TextWriter writer)
     {
         var board = state.Board;
-        var lastMove = state.MoveHistory.LastOrDefault();
+        var lastMove = state.LastMove;
 
         writer.WriteLine();
         PrintTopBorder(writer);
@@ -26,16 +26,15 @@ public static class BoardPrinter
 
             for (int column = 0; column < BoardDimensions.Size; column++)
             {
-                var position = Position.CreateFromCoords(row, column);
-                var piece = board.GetPiece(position);
+                var piece = board[row, column];
 
                 bool isDarkSquare = IsDarkSquare(row, column);
-                bool isHighlighted = IsHighlighted(position, lastMove);
+                bool isHighlighted = IsHighlighted(row, column,lastMove);
 
                 PrintSquare(writer, piece, isDarkSquare, isHighlighted);
             }
 
-            writer.WriteLine("│");
+            writer.WriteLine();
 
             if (row < BoardDimensions.Size - 1)
                 PrintMiddleBorder(writer);
@@ -50,13 +49,17 @@ public static class BoardPrinter
         return (row + col) % 2 == 1;
     }
 
-    private static bool IsHighlighted(Position position, Move? lastMove)
+    private static bool IsHighlighted(int row, int column, MoveDto? lastMove)
     {
-        return lastMove is not null 
-            && (position == lastMove.Origin || position == lastMove.Target);
+        if (lastMove is null)
+            return false;
+
+        return
+            lastMove.OriginRow == row && lastMove.OriginColumn == column ||
+            lastMove.TargetRow == row && lastMove.TargetColumn == column;
     }
 
-    private static void PrintSquare(TextWriter writer, Piece? piece, bool isDarkSquare, bool highlight)
+    private static void PrintSquare(TextWriter writer, PieceDto? piece, bool isDarkSquare, bool highlight)
     {
         if (UseConsoleColors(writer))
             SetBackgroundColor(isDarkSquare, highlight);
@@ -100,14 +103,14 @@ public static class BoardPrinter
         }
     }
 
-    private static void SetPieceColor(Piece piece)
+    private static void SetPieceColor(PieceDto piece)
     {
         Console.ForegroundColor = piece.Color == PieceColor.White
             ? ConsoleColor.White
             : ConsoleColor.DarkGray;
     }
 
-    private static string GetUnicodeSymbol(Piece piece)
+    private static string GetUnicodeSymbol(PieceDto piece)
     {
         return piece.Type switch
         {
@@ -138,10 +141,10 @@ public static class BoardPrinter
 
     private static void PrintFiles(TextWriter writer)
     {
-        writer.Write("    ");
+        writer.Write("   ");
         for (char file = BoardDimensions.MinFile; file <= BoardDimensions.MaxFile; file++)
         {
-            writer.Write($" {file} ");
+            writer.Write($" {file}  ");
         }
         writer.WriteLine();
     }
