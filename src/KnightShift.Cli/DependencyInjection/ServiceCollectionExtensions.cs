@@ -13,6 +13,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<CommandLoop>();
         services.AddScoped<CommandParser>();
 
+        services.AddScoped<ICommand, MoveCommand>();
+        services.AddScoped<ICommand, ListMovesCommand>();
         services.AddScoped<ICommand, ExitCommand>();
         services.AddScoped<ICommand, HelpCommand>();
 

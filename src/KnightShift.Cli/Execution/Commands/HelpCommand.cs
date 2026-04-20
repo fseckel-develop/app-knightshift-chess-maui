@@ -11,8 +11,10 @@ public class HelpCommand : ICommand
     {
         Console.WriteLine("""
             Available commands:
-                exit    exit application
-                help    show this help
+                move {uci}  → play specified move (e.g. move e2e4)
+                list        → list legal moves for the current turn
+                exit        → exit application
+                help        → show this help
             """
         );
 
