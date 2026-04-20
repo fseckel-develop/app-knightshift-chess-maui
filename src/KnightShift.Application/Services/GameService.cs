@@ -13,19 +13,22 @@ public class GameService : IGameService
     private readonly IMoveGenerator _moveGenerator;
     private readonly GameResultEvaluator _evaluator;
     private readonly IGameStateFactory _factory;
-    private readonly IGameStateSerializer _serializer;
+    private readonly IGameStateSerializer _stateSerializer;
+    private readonly IMoveSerializer _moveSerializer;
     private GameState _state;
 
     public GameService(
         IMoveGenerator moveGenerator,
         GameResultEvaluator evaluator,
         IGameStateFactory factory,
-        IGameStateSerializer serializer)
+        IGameStateSerializer stateSerializer,
+        IMoveSerializer moveSerializer)
     {
         _moveGenerator = moveGenerator;
         _evaluator = evaluator;
         _factory = factory;
-        _serializer = serializer;
+        _stateSerializer = stateSerializer;
+        _moveSerializer = moveSerializer;
 
         _state = _factory.CreateInitialState();
     }
@@ -49,11 +52,19 @@ public class GameService : IGameService
             .Select(MoveMapper.ToDto);
     }
 
-    public void ApplyMove(MoveDto moveDto)
+    public void ApplyMove(string serializedMove)
     {
-        var move = MoveMapper.FromDto(moveDto);
-        _state = _state.ApplyMove(move);
-        _evaluator.Evaluate(_state);
+        var parsed = _moveSerializer.Deserialize(serializedMove);
+        var legalMoves = _moveGenerator.GenerateMoves(_state);
+        
+        var matched = legalMoves.FirstOrDefault(move =>
+            move.Origin == parsed.Origin &&
+            move.Target == parsed.Target &&
+            move.Promotion == parsed.Promotion
+        ) 
+        ?? throw new InvalidOperationException($"Move {serializedMove} is not legal.");
+
+        _state = _state.ApplyMove(matched);
     }
 
     public void StartNewGame()
@@ -63,13 +74,13 @@ public class GameService : IGameService
 
     public void LoadState(string serializedState)
     {
-        _state = _serializer.Deserialize(serializedState);
+        _state = _stateSerializer.Deserialize(serializedState);
         _evaluator.Evaluate(_state);
     }
     
     public string ExportState()
     {
-        return _serializer.Serialize(_state);
+        return _stateSerializer.Serialize(_state);
     }
 
     public bool IsGameOver()
