@@ -40,7 +40,7 @@ public class GameServiceTests
     {
         var service = CreateService();
 
-        service.ApplyMove(new MoveDto { Origin = "e2", Target = "e4" });
+        service.ApplyMove("e2e4");
 
         service.StartNewGame();
         var state = service.GetState();
@@ -74,7 +74,7 @@ public class GameServiceTests
     {
         var service = CreateService();
 
-        service.ApplyMove(new MoveDto { Origin = "e2", Target = "e4" });
+        service.ApplyMove("e2e4");
 
         var state = service.GetState();
 
