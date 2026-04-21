@@ -19,7 +19,10 @@ public class ShowBoardCommand : ICommand
     public Task ExecuteAsync(string input)
     {
         var state = _game.GetState();
-        BoardPrinter.Print(state);
+        var board = BoardRenderer.RenderBoard(state);
+        var framed = TextFrameRenderer.RenderFrame(board);
+        Console.Write(framed);
+        
         return Task.CompletedTask;
     }
 }
