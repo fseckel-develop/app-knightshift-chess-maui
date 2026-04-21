@@ -7,8 +7,11 @@ public interface IGameService
     GameStateDto GetState();
     IEnumerable<MoveDto> GetLegalMoves();
     IEnumerable<MoveDto> GetLegalMoves(string origin);
+    IEnumerable<MoveDto> GetMoveHistory();
     void ApplyMove(string serializedMove);
     void StartNewGame();
+    void UndoMove();
+    void RedoMove();
     void LoadState(string serializedState);
     string ExportState();
     bool IsGameOver();

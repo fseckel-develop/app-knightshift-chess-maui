@@ -8,6 +8,11 @@ using KnightShift.Engine.Evaluation;
 
 namespace KnightShift.Application.Services;
 
+record GameSnapshot(
+    GameState State, 
+    Move? Move
+);
+
 public class GameService : IGameService
 {
     private readonly IMoveGenerator _moveGenerator;
@@ -15,6 +20,9 @@ public class GameService : IGameService
     private readonly IGameStateFactory _factory;
     private readonly IGameStateSerializer _stateSerializer;
     private readonly IMoveSerializer _moveSerializer;
+
+    private readonly Stack<GameSnapshot> _undoStack = new();
+    private readonly Stack<GameSnapshot> _redoStack = new();
     private GameState _state;
 
     public GameService(
@@ -52,30 +60,68 @@ public class GameService : IGameService
             .Select(MoveMapper.ToDto);
     }
 
+    public IEnumerable<MoveDto> GetMoveHistory()
+    {
+        return _undoStack
+            .Reverse()
+            .Select(snapshot => snapshot.Move)
+            .Where(move => move is not null)
+            .Select(MoveMapper.ToDto!);
+    }
+
     public void ApplyMove(string serializedMove)
     {
         var parsed = _moveSerializer.Deserialize(serializedMove);
         var legalMoves = _moveGenerator.GenerateMoves(_state);
         
-        var matched = legalMoves.FirstOrDefault(move =>
+        var move = legalMoves.FirstOrDefault(move =>
             move.Origin == parsed.Origin &&
             move.Target == parsed.Target &&
             move.Promotion == parsed.Promotion
         ) 
         ?? throw new InvalidOperationException($"Move {serializedMove} is not legal.");
 
-        _state = _state.ApplyMove(matched);
+        _undoStack.Push(new GameSnapshot(_state, move));
+        _redoStack.Clear();
+
+        _state = _state.ApplyMove(move);
     }
 
     public void StartNewGame()
     {
         _state = _factory.CreateInitialState();
+        _undoStack.Clear();
+        _redoStack.Clear();
+    }
+
+    public void UndoMove()
+    {
+        if (_undoStack.Count == 0)
+            throw new InvalidOperationException("No moves to undo.");
+
+        var (state, move) = _undoStack.Pop();
+        _redoStack.Push(new GameSnapshot(_state, move));
+
+        _state = state;
+    }
+
+    public void RedoMove()
+    {
+        if (_redoStack.Count == 0)
+            throw new InvalidOperationException("No moves to redo.");
+
+        var (state, move) = _redoStack.Pop();
+        _undoStack.Push(new GameSnapshot(_state, move));
+
+        _state = _state.ApplyMove(move!);
     }
 
     public void LoadState(string serializedState)
     {
         _state = _stateSerializer.Deserialize(serializedState);
         _evaluator.Evaluate(_state);
+        _undoStack.Clear();
+        _redoStack.Clear();
     }
     
     public string ExportState()
