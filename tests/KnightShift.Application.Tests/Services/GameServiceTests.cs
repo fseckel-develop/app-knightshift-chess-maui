@@ -32,7 +32,7 @@ public class GameServiceTests
         var state = service.GetState();
 
         Assert.NotNull(state);
-        Assert.Equal("White", state.CurrentTurn);
+        Assert.Equal(PieceColorDto.White, state.CurrentTurn);
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class GameServiceTests
         service.StartNewGame();
         var state = service.GetState();
 
-        Assert.Equal("White", state.CurrentTurn);
+        Assert.Equal(PieceColorDto.White, state.CurrentTurn);
     }
 
     [Fact]
@@ -78,8 +78,8 @@ public class GameServiceTests
 
         var state = service.GetState();
 
-        Assert.Equal("Black", state.CurrentTurn);
-        Assert.Equal("P", state.Board[4][4]);
+        Assert.Equal(PieceColorDto.Black, state.CurrentTurn);
+        Assert.Equal(PieceTypeDto.Pawn, state.Board[4, 4]!.Type);
     }
 
     [Fact]

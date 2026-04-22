@@ -1,6 +1,5 @@
 using KnightShift.Application.Contracts.DTOs;
 using KnightShift.Domain.Constants;
-using KnightShift.Domain.Enums;
 
 namespace KnightShift.Cli.Rendering;
 
@@ -84,7 +83,7 @@ public static class BoardRenderer
         }
         else
         {
-            if (piece.Color == PieceColor.White)
+            if (piece.Color == PieceColorDto.White)
                 writer.Write(Ansi.Foreground(255, 255, 255));
             else
                 writer.Write(Ansi.Foreground(30, 30, 30));
@@ -103,12 +102,12 @@ public static class BoardRenderer
     {
         return piece.Type switch
         {
-            PieceType.King   => piece.Color == PieceColor.White ? "♔" : "♚",
-            PieceType.Queen  => piece.Color == PieceColor.White ? "♕" : "♛",
-            PieceType.Rook   => piece.Color == PieceColor.White ? "♖" : "♜",
-            PieceType.Bishop => piece.Color == PieceColor.White ? "♗" : "♝",
-            PieceType.Knight => piece.Color == PieceColor.White ? "♘" : "♞",
-            PieceType.Pawn   => piece.Color == PieceColor.White ? "♙" : "♟",
+            PieceTypeDto.King   => piece.Color == PieceColorDto.White ? "♔" : "♚",
+            PieceTypeDto.Queen  => piece.Color == PieceColorDto.White ? "♕" : "♛",
+            PieceTypeDto.Rook   => piece.Color == PieceColorDto.White ? "♖" : "♜",
+            PieceTypeDto.Bishop => piece.Color == PieceColorDto.White ? "♗" : "♝",
+            PieceTypeDto.Knight => piece.Color == PieceColorDto.White ? "♘" : "♞",
+            PieceTypeDto.Pawn   => piece.Color == PieceColorDto.White ? "♙" : "♟",
             _ => "?"
         };
     }
