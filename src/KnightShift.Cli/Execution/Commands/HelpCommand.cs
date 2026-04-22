@@ -16,6 +16,7 @@ public class HelpCommand : ICommand
                 board       → show current board state
                 undo        → undo last move
                 redo        → redo last undone move
+                new         → start a new game
                 exit        → exit application
                 help        → show this help
             """
