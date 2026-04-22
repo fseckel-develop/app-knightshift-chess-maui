@@ -1,4 +1,5 @@
 using KnightShift.Application.Mappers;
+using KnightShift.Application.Contracts.DTOs;
 using KnightShift.Domain.Core;
 using KnightShift.Domain.Enums;
 
@@ -13,24 +14,24 @@ public class GameStateMapperTests
 
         var dto = GameStateMapper.ToDto(state);
 
-        Assert.Equal(8, dto.Board.Length);
-        Assert.All(dto.Board, row => Assert.Equal(8, row.Length));
+        Assert.Equal(8, dto.Board.GetLength(0));
+        Assert.Equal(8, dto.Board.GetLength(1));
     }
 
     [Fact]
-    public void ToDto_ShouldMapEmptySquaresAsDot()
+    public void ToDto_ShouldMapEmptySquaresAsNull()
     {
         var state = new GameState();
 
         var dto = GameStateMapper.ToDto(state);
 
-        Assert.All(dto.Board, row =>
-            Assert.All(row, cell => Assert.Equal(".", cell))
-        );
+        for (int row = 0; row < 8; row++)
+        for (int column = 0; column < 8; column++)
+            Assert.Null(dto.Board[row, column]);
     }
 
     [Fact]
-    public void ToDto_ShouldMapWhitePieceAsUppercase()
+    public void ToDto_ShouldMapWhitePiecesCorrectly()
     {
         var state = new GameState();
 
@@ -38,14 +39,17 @@ public class GameStateMapperTests
         state.Board.SetPiece(position, new Piece(PieceType.Queen, PieceColor.White));
 
         var dto = GameStateMapper.ToDto(state);
+        var (row, column) = Position.ToCoords(position);
 
-        var (row, col) = Position.ToCoords(position);
+        var piece = dto.Board[row, column];
 
-        Assert.Equal("Q", dto.Board[row][col]);
+        Assert.NotNull(piece);
+        Assert.Equal(PieceTypeDto.Queen, piece.Type);
+        Assert.Equal(PieceColorDto.White, piece.Color);
     }
 
     [Fact]
-    public void ToDto_ShouldMapBlackPieceAsLowercase()
+    public void ToDto_ShouldMapBlackPieceCorrectly()
     {
         var state = new GameState();
 
@@ -53,10 +57,13 @@ public class GameStateMapperTests
         state.Board.SetPiece(position, new Piece(PieceType.Knight, PieceColor.Black));
 
         var dto = GameStateMapper.ToDto(state);
+        var (row, col) = Position.ToCoords(position);
 
-        var (row, column) = Position.ToCoords(position);
+        var piece = dto.Board[row, col];
 
-        Assert.Equal("n", dto.Board[row][column]);
+        Assert.NotNull(piece);
+        Assert.Equal(PieceTypeDto.Knight, piece!.Type);
+        Assert.Equal(PieceColorDto.Black, piece.Color);
     }
 
     [Fact]
@@ -66,28 +73,29 @@ public class GameStateMapperTests
 
         var testCases = new[]
         {
-            (PieceType.Pawn,   "p"),
-            (PieceType.Knight, "n"),
-            (PieceType.Bishop, "b"),
-            (PieceType.Rook,   "r"),
-            (PieceType.Queen,  "q"),
-            (PieceType.King,   "k"),
+            PieceType.Pawn,
+            PieceType.Knight,
+            PieceType.Bishop,
+            PieceType.Rook,
+            PieceType.Queen,
+            PieceType.King,
         };
 
-        int column = 0;
-
-        foreach (var (type, symbol) in testCases)
+        for (int i = 0; i < testCases.Length; i++)
         {
-            var position = Position.CreateFromCoords(0, column);
-            state.Board.SetPiece(position, new Piece(type, PieceColor.Black));
-            column++;
+            var pos = Position.CreateFromCoords(0, i);
+            state.Board.SetPiece(pos, new Piece(testCases[i], PieceColor.Black));
         }
 
         var dto = GameStateMapper.ToDto(state);
 
         for (int i = 0; i < testCases.Length; i++)
         {
-            Assert.Equal(testCases[i].Item2, dto.Board[0][i]);
+            var piece = dto.Board[0, i];
+
+            Assert.NotNull(piece);
+            Assert.Equal((PieceTypeDto)testCases[i], piece!.Type);
+            Assert.Equal(PieceColorDto.Black, piece.Color);
         }
     }
 
@@ -103,8 +111,8 @@ public class GameStateMapperTests
 
         var dto = GameStateMapper.ToDto(state);
 
-        Assert.Equal("Black", dto.CurrentTurn);
-        Assert.Equal("Draw", dto.Result);
-        Assert.Equal("Stalemate", dto.EndReason);
+        Assert.Equal(PieceColorDto.Black, dto.CurrentTurn);
+        Assert.Equal(GameResultDto.Draw, dto.GameResult);
+        Assert.Equal(GameEndReasonDto.Stalemate, dto.GameEndReason);
     }
 }
