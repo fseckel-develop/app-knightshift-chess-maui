@@ -89,11 +89,13 @@ public class GameService : IGameService
         _redoStack.Clear();
 
         _state = _state.ApplyMove(move);
+        _evaluator.Evaluate(_state);
     }
 
     public void StartNewGame()
     {
         _state = _factory.CreateInitialState();
+        _evaluator.Evaluate(_state);
         _undoStack.Clear();
         _redoStack.Clear();
     }
@@ -107,6 +109,7 @@ public class GameService : IGameService
         _redoStack.Push(new GameSnapshot(_state, move));
 
         _state = state;
+        _evaluator.Evaluate(_state);
     }
 
     public void RedoMove()
@@ -118,6 +121,7 @@ public class GameService : IGameService
         _undoStack.Push(new GameSnapshot(_state, move));
 
         _state = _state.ApplyMove(move!);
+        _evaluator.Evaluate(_state);
     }
 
     public void LoadState(string serializedState)
