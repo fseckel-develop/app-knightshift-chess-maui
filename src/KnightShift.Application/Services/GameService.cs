@@ -42,7 +42,11 @@ public class GameService : IGameService
     }
 
     public GameStateDto GetState()
-        => GameStateMapper.ToDto(_state);
+    {
+        var state = GameStateMapper.ToDto(_state);
+        state.CurrentIsInCheck = _evaluator.IsKingInCheck(_state);
+        return state;
+    }
 
     public IEnumerable<MoveDto> GetLegalMoves()
     {

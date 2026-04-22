@@ -27,9 +27,7 @@ public class GameResultEvaluator
             return;
         }
 
-        bool isInCheck = _checkDetector.IsKingInCheck(state, state.CurrentTurn);
-
-        if (isInCheck)
+        if (IsKingInCheck(state))
         {
             state.Result = state.CurrentTurn == PieceColor.White
                 ? GameResult.BlackWins
@@ -41,5 +39,10 @@ public class GameResultEvaluator
             state.Result = GameResult.Draw;
             state.EndReason = GameEndReason.Stalemate;
         }
+    }
+
+    public bool IsKingInCheck(GameState state)
+    {
+        return _checkDetector.IsKingInCheck(state, state.CurrentTurn);
     }
 }
