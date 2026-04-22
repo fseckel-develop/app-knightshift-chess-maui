@@ -5,12 +5,10 @@ namespace KnightShift.Application.Contracts.DTOs;
 public class GameStateDto
 {
     public PieceDto?[,] Board { get; set; } = new PieceDto[BoardDimensions.Size, BoardDimensions.Size];
-
-    public string CurrentTurn { get; set; } = default!;
-
     public MoveDto? LastMove { get; set; }
 
-    public string Result { get; set; } = default!;
+    public PieceColorDto CurrentTurn { get; set; }
 
-    public string EndReason { get; set; } = default!;
+    public GameResultDto GameResult { get; set; }
+    public GameEndReasonDto GameEndReason { get; set; }
 }

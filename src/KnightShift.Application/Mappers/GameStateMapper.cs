@@ -12,10 +12,10 @@ public static class GameStateMapper
         return new GameStateDto
         {
             Board = MapBoard(state),
-            CurrentTurn = state.CurrentTurn.ToString(),
-            Result = state.Result.ToString(),
-            EndReason = state.EndReason.ToString(),
-            
+            CurrentTurn = (PieceColorDto)state.CurrentTurn,
+            GameResult = (GameResultDto)state.Result,
+            GameEndReason = (GameEndReasonDto)state.EndReason,
+
             LastMove = state.MoveHistory.LastOrDefault() is Move lastMove 
                 ? MoveMapper.ToDto(lastMove) 
                 : null,
@@ -35,8 +35,8 @@ public static class GameStateMapper
 
                 board[row, column] = piece is null ? null : new PieceDto
                 {
-                    Type = piece.Type,
-                    Color = piece.Color
+                    Type = (PieceTypeDto)piece.Type,
+                    Color = (PieceColorDto)piece.Color
                 };
             }
         }
