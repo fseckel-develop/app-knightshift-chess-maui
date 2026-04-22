@@ -8,6 +8,7 @@ public class GameStateDto
     public MoveDto? LastMove { get; set; }
 
     public PieceColorDto CurrentTurn { get; set; }
+    public bool CurrentIsInCheck { get; set; }
 
     public GameResultDto GameResult { get; set; }
     public GameEndReasonDto GameEndReason { get; set; }
