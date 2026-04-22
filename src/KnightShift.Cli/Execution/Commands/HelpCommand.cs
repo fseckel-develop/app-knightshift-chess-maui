@@ -14,6 +14,7 @@ public class HelpCommand : ICommand
                 move {uci}  → play specified move (e.g. move e2e4)
                 list        → list legal moves for the current turn
                 board       → show current board state
+                status      → show current game status
                 undo        → undo last move
                 redo        → redo last undone move
                 new         → start a new game
