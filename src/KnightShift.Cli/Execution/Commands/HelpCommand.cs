@@ -11,15 +11,16 @@ public class HelpCommand : ICommand
     {
         Console.WriteLine("""
             Available commands:
-                move {uci}  → play specified move (e.g. move e2e4)
-                list        → list legal moves for the current turn
-                board       → show current board state
-                status      → show current game status
-                undo        → undo last move
-                redo        → redo last undone move
-                new         → start a new game
-                exit        → exit application
-                help        → show this help
+                move {uci}    → play specified move (e.g. move e2e4)
+                list          → list legal moves for the current turn
+                list {square} → list legal moves for specified origin (e.g. list e2)
+                board         → show current board state
+                status        → show current game status
+                undo          → undo last move
+                redo          → redo last undone move
+                new           → start a new game
+                exit          → exit application
+                help          → show this help
             """
         );
 
