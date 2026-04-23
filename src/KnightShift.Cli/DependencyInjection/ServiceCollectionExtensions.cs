@@ -17,6 +17,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICommand, ListMovesCommand>();
         services.AddScoped<ICommand, ShowBoardCommand>();
         services.AddScoped<ICommand, StatusCommand>();
+        services.AddScoped<ICommand, HistoryCommand>();
 
         services.AddScoped<ICommand, NewGameCommand>();
         services.AddScoped<ICommand, UndoCommand>();

@@ -16,6 +16,7 @@ public class HelpCommand : ICommand
                 list {square} → list legal moves for specified origin (e.g. list e2)
                 board         → show current board state
                 status        → show current game status
+                history       → show move history in SAN notation
                 undo          → undo last move
                 redo          → redo last undone move
                 new           → start a new game
