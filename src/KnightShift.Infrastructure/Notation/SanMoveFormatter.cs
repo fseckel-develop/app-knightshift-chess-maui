@@ -2,31 +2,40 @@ using KnightShift.Application.Contracts.Interfaces;
 using KnightShift.Domain.Core;
 using KnightShift.Domain.Enums;
 using KnightShift.Engine.Evaluation;
+using KnightShift.Engine.Moves;
 
 namespace KnightShift.Infrastructure.Notation;
 
 public class SanMoveFormatter : IMoveFormatter
 {
     private readonly GameResultEvaluator _evaluator;
+    private readonly IMoveGenerator _generator;
 
-    public SanMoveFormatter(GameResultEvaluator evaluator)
+    public SanMoveFormatter(GameResultEvaluator evaluator, IMoveGenerator generator)
     {
         _evaluator = evaluator;
+        _generator = generator;
     }
 
     public string Format(Move move, GameState stateBeforeMove, GameState stateAfterMove)
     {
-        var piece = stateBeforeMove.Board.GetPiece(move.Origin)!;
+        // 1. Castling 
+        if (move.IsCastling)
+            return move.Target.File > move.Origin.File ? "O-O" : "O-O-O";
 
+        var piece = stateBeforeMove.Board.GetPiece(move.Origin)!;
         string notation = "";
 
-        // 1. Piece letter (no letter for pawn)
+        // 2. Piece (no letter for pawn) + Disambiguation
         if (piece.Type != PieceType.Pawn)
+        {
             notation += ParsePieceType(piece.Type);
+            notation += GetDisambiguation(move, stateBeforeMove);
+        }
 
-        // 2. Capture
+        // 3. Capture
         var targetPiece = stateBeforeMove.Board.GetPiece(move.Target);
-        bool isCapture = targetPiece != null;
+        bool isCapture = move.IsEnPassant || targetPiece != null;
 
         if (piece.Type == PieceType.Pawn && isCapture)
             notation += move.Origin.File;
@@ -34,14 +43,14 @@ public class SanMoveFormatter : IMoveFormatter
         if (isCapture)
             notation += "x";
 
-        // 3. Target square
+        // 4. Target
         notation += move.Target.ToString();
 
-        // 4. Promotion
+        // 5. Promotion
         if (move.Promotion is not null)
             notation += "=" + ParsePieceType(move.Promotion.Value);
 
-        // 5. Check / Checkmate
+        // 6. Check / Checkmate
         _evaluator.Evaluate(stateAfterMove);
 
         if (_evaluator.IsKingInCheck(stateAfterMove))
@@ -65,4 +74,29 @@ public class SanMoveFormatter : IMoveFormatter
         PieceType.Knight => "N",
         _ => ""
     };
+
+    private string GetDisambiguation(Move move, GameState state)
+    {
+        var piece = state.Board.GetPiece(move.Origin)!;
+
+        var candidates = _generator.GenerateMoves(state)
+            .Where(candidate =>
+                candidate.Target == move.Target &&
+                candidate.Origin != move.Origin &&
+                state.Board.GetPiece(candidate.Origin)?.Type == piece.Type)
+            .ToList();
+
+        if (candidates.Count == 0)
+            return "";
+
+        bool sameFile = candidates.Any(candidate => candidate.Origin.File == move.Origin.File);
+        if (!sameFile)
+            return move.Origin.File.ToString();
+        
+        bool sameRank = candidates.Any(candidate => candidate.Origin.Rank == move.Origin.Rank);
+        if (!sameRank)
+            return move.Origin.Rank.ToString();
+
+        return move.Origin.ToString();
+    }
 }
