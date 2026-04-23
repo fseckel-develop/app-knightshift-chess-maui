@@ -21,6 +21,7 @@ public class HelpCommand : ICommand
                 undo          → undo last move
                 redo          → redo last undone move
                 new           → start a new game
+                load {fen}    → load game from string in FEN notation
                 exit          → exit application
                 help          → show this help
             """
