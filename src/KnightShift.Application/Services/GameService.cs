@@ -20,6 +20,7 @@ public class GameService : IGameService
     private readonly IGameStateFactory _factory;
     private readonly IGameStateSerializer _stateSerializer;
     private readonly IMoveSerializer _moveSerializer;
+    private readonly IMoveFormatter _formatter;
 
     private readonly Stack<GameSnapshot> _undoStack = new();
     private readonly Stack<GameSnapshot> _redoStack = new();
@@ -30,13 +31,15 @@ public class GameService : IGameService
         GameResultEvaluator evaluator,
         IGameStateFactory factory,
         IGameStateSerializer stateSerializer,
-        IMoveSerializer moveSerializer)
+        IMoveSerializer moveSerializer,
+        IMoveFormatter formatter)
     {
         _moveGenerator = moveGenerator;
         _evaluator = evaluator;
         _factory = factory;
         _stateSerializer = stateSerializer;
         _moveSerializer = moveSerializer;
+        _formatter = formatter;
 
         _state = _factory.CreateInitialState();
     }
@@ -71,6 +74,29 @@ public class GameService : IGameService
             .Select(snapshot => snapshot.Move)
             .Where(move => move is not null)
             .Select(MoveMapper.ToDto!);
+    }
+
+    public IEnumerable<string> GetMoveHistoryFormatted()
+    {
+        var snapshots = _undoStack.Reverse().ToList();
+        var formattedHistory = new List<string>();
+
+        GameState current = _factory.CreateInitialState();
+        foreach (var snapshot in snapshots)
+        {
+            if (snapshot.Move is null)
+                continue;
+
+            var stateBeforeMove = current;
+            var stateAfterMove = current.ApplyMove(snapshot.Move);
+            var formattedMove = _formatter.Format(snapshot.Move, stateBeforeMove, stateAfterMove);
+
+            formattedHistory.Add(formattedMove);
+
+            current = stateAfterMove;
+        }
+
+        return formattedHistory;
     }
 
     public void ApplyMove(string serializedMove)

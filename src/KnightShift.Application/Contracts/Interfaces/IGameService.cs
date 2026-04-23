@@ -8,6 +8,7 @@ public interface IGameService
     IEnumerable<MoveDto> GetLegalMoves();
     IEnumerable<MoveDto> GetLegalMoves(string origin);
     IEnumerable<MoveDto> GetMoveHistory();
+    IEnumerable<string> GetMoveHistoryFormatted();
     void ApplyMove(string serializedMove);
     void StartNewGame();
     void UndoMove();
