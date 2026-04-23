@@ -21,6 +21,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICommand, FenCommand>();
 
         services.AddScoped<ICommand, NewGameCommand>();
+        services.AddScoped<ICommand, LoadCommand>();
         services.AddScoped<ICommand, UndoCommand>();
         services.AddScoped<ICommand, RedoCommand>();
         services.AddScoped<ICommand, ExitCommand>();
