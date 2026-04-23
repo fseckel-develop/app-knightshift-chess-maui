@@ -14,26 +14,35 @@ public class ListMovesCommand : ICommand
     }
 
     public bool CanHandle(string input)
-        => input.Equals(Name, StringComparison.OrdinalIgnoreCase);
+        => input.StartsWith(Name, StringComparison.OrdinalIgnoreCase);
 
     public Task ExecuteAsync(string input)
     {
-        var moves = _game.GetLegalMoves();
-
-        if (!moves.Any())
+        try
         {
-            Console.WriteLine("No legal moves.");
-            return Task.CompletedTask;
+            var listAndSquare = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            var moves = (listAndSquare.Length == 2)
+                ? _game.GetLegalMoves(listAndSquare[1])
+                : _game.GetLegalMoves();
+
+            if (!moves.Any())
+            {
+                Console.WriteLine("No legal moves.");
+                return Task.CompletedTask;
+            }
+
+            foreach (var move in moves)
+            {
+                Console.Write($"{move.Origin}{move.Target} ");
+            }
+            Console.WriteLine();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
         }
 
-        Console.WriteLine("Legal moves:");
-
-        foreach (var move in moves)
-        {
-            Console.Write($"{move.Origin}{move.Target} ");
-        }
-
-        Console.WriteLine();
         return Task.CompletedTask;
     }
 }
