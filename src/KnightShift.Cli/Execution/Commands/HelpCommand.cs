@@ -17,6 +17,7 @@ public class HelpCommand : ICommand
                 board         → show current board state
                 status        → show current game status
                 history       → show move history in SAN notation
+                fen           → show current position in FEN notation
                 undo          → undo last move
                 redo          → redo last undone move
                 new           → start a new game
