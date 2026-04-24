@@ -16,6 +16,8 @@ public class GameService : IGameService
     private readonly IGameStateFactory _factory;
     private readonly IGameStateSerializer _stateSerializer;
     private readonly IMoveSerializer _moveSerializer;
+    private readonly IGameExporter _exporter;
+    private readonly IGameImporter _importer;
 
     private GameSession _game;
 
@@ -24,13 +26,17 @@ public class GameService : IGameService
         GameResultEvaluator evaluator,
         IGameStateFactory factory,
         IGameStateSerializer stateSerializer,
-        IMoveSerializer moveSerializer)
+        IMoveSerializer moveSerializer,
+        IGameExporter exporter,
+        IGameImporter importer)
     {
         _moveGenerator = moveGenerator;
         _evaluator = evaluator;
         _factory = factory;
         _stateSerializer = stateSerializer;
         _moveSerializer = moveSerializer;
+        _exporter = exporter;
+        _importer = importer;
 
         _game = new GameSession(_factory.CreateInitialState());
         _evaluator.Evaluate(_game.CurrentState);
@@ -117,10 +123,33 @@ public class GameService : IGameService
         _game = new GameSession(_stateSerializer.Deserialize(serializedState));
         _evaluator.Evaluate(_game.CurrentState);
     }
+
+    public void LoadGame(string serializedGame)
+    {
+        var (initialState, moves) = _importer.Import(serializedGame);
+        _game = new GameSession(initialState);
+
+        foreach (var move in moves)
+        {
+            var legalMoves = _moveGenerator.GenerateMoves(_game.CurrentState);
+            if (!legalMoves.Contains(move))
+                throw new InvalidOperationException("Invalid move in imported game.");
+
+            _game.ApplyMove(move);
+        }
+
+        _evaluator.Evaluate(_game.CurrentState);
+    }
     
     public string ExportState()
     {
         return _stateSerializer.Serialize(_game.CurrentState);
+    }
+
+    public string ExportGame()
+    {
+        var record = new GameRecord(_game.InitialState, [.._game.GetMoves()]);
+        return _exporter.Export(record);
     }
 
     public bool IsGameOver()

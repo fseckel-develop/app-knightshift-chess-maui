@@ -14,6 +14,8 @@ public interface IGameService
     void RedoMove();
     void StartNewGame();
     void LoadState(string serializedState);
+    void LoadGame(string serializedGame);
     string ExportState();
+    string ExportGame();
     bool IsGameOver();
 }
