@@ -1,17 +1,13 @@
 using KnightShift.Application.Contracts.Interfaces;
 using KnightShift.Application.Contracts.DTOs;
 using KnightShift.Application.Mappers;
+using KnightShift.Application.Game;
 using KnightShift.Domain.Core;
 using KnightShift.Domain.Enums;
 using KnightShift.Engine.Moves;
 using KnightShift.Engine.Evaluation;
 
 namespace KnightShift.Application.Services;
-
-record GameSnapshot(
-    GameState State, 
-    Move? Move
-);
 
 public class GameService : IGameService
 {
@@ -20,41 +16,37 @@ public class GameService : IGameService
     private readonly IGameStateFactory _factory;
     private readonly IGameStateSerializer _stateSerializer;
     private readonly IMoveSerializer _moveSerializer;
-    private readonly IMoveFormatter _formatter;
 
-    private readonly Stack<GameSnapshot> _undoStack = new();
-    private readonly Stack<GameSnapshot> _redoStack = new();
-    private GameState _state;
+    private GameSession _game;
 
     public GameService(
         IMoveGenerator moveGenerator,
         GameResultEvaluator evaluator,
         IGameStateFactory factory,
         IGameStateSerializer stateSerializer,
-        IMoveSerializer moveSerializer,
-        IMoveFormatter formatter)
+        IMoveSerializer moveSerializer)
     {
         _moveGenerator = moveGenerator;
         _evaluator = evaluator;
         _factory = factory;
         _stateSerializer = stateSerializer;
         _moveSerializer = moveSerializer;
-        _formatter = formatter;
 
-        _state = _factory.CreateInitialState();
+        _game = new GameSession(_factory.CreateInitialState());
+        _evaluator.Evaluate(_game.CurrentState);
     }
 
     public GameStateDto GetState()
     {
-        var state = GameStateMapper.ToDto(_state);
-        state.CurrentIsInCheck = _evaluator.IsKingInCheck(_state);
+        var state = GameStateMapper.ToDto(_game.CurrentState);
+        state.CurrentIsInCheck = _evaluator.IsKingInCheck(_game.CurrentState);
         return state;
     }
 
     public IEnumerable<MoveDto> GetLegalMoves()
     {
         return _moveGenerator
-            .GenerateMoves(_state)
+            .GenerateMoves(_game.CurrentState)
             .Select(MoveMapper.ToDto);
     }
 
@@ -62,110 +54,78 @@ public class GameService : IGameService
     {
         var position = Position.CreateFromAlgebraic(origin);
         return _moveGenerator
-            .GenerateMoves(_state)
+            .GenerateMoves(_game.CurrentState)
             .Where(move => move.Origin == position)
             .Select(MoveMapper.ToDto);
     }
 
-    public IEnumerable<MoveDto> GetMoveHistory()
+    public IEnumerable<MoveStep> GetHistory()
     {
-        return _undoStack
-            .Reverse()
-            .Select(snapshot => snapshot.Move)
-            .Where(move => move is not null)
-            .Select(MoveMapper.ToDto!);
-    }
+        var state = _game.InitialState.Clone();
 
-    public IEnumerable<string> GetMoveHistoryFormatted()
-    {
-        var snapshots = _undoStack.Reverse().ToList();
-        var formattedHistory = new List<string>();
-
-        GameState current = _factory.CreateInitialState();
-        foreach (var snapshot in snapshots)
+        foreach (var move in _game.GetMoves())
         {
-            if (snapshot.Move is null)
-                continue;
+            var stateBeforeMove = state;
+            var stateAfterMove = state.ApplyMove(move);
 
-            var stateBeforeMove = current;
-            var stateAfterMove = current.ApplyMove(snapshot.Move);
-            var formattedMove = _formatter.Format(snapshot.Move, stateBeforeMove, stateAfterMove);
+            yield return new MoveStep(move, stateBeforeMove, stateAfterMove);
 
-            formattedHistory.Add(formattedMove);
-
-            current = stateAfterMove;
+            state = stateAfterMove;
         }
-
-        return formattedHistory;
     }
 
     public void ApplyMove(string serializedMove)
     {
-        var parsed = _moveSerializer.Deserialize(serializedMove);
-        var legalMoves = _moveGenerator.GenerateMoves(_state);
+        var requestedMove = _moveSerializer.Deserialize(serializedMove);
+        var legalMoves = _moveGenerator.GenerateMoves(_game.CurrentState);
         
         var move = legalMoves.FirstOrDefault(move =>
-            move.Origin == parsed.Origin &&
-            move.Target == parsed.Target &&
-            move.Promotion == parsed.Promotion
+            move.Origin == requestedMove.Origin &&
+            move.Target == requestedMove.Target &&
+            move.Promotion == requestedMove.Promotion
         ) 
         ?? throw new InvalidOperationException("Illegal move.");
 
-        _undoStack.Push(new GameSnapshot(_state, move));
-        _redoStack.Clear();
-
-        _state = _state.ApplyMove(move);
-        _evaluator.Evaluate(_state);
-    }
-
-    public void StartNewGame()
-    {
-        _state = _factory.CreateInitialState();
-        _evaluator.Evaluate(_state);
-        _undoStack.Clear();
-        _redoStack.Clear();
+        _game.ApplyMove(move);
+        _evaluator.Evaluate(_game.CurrentState);
     }
 
     public void UndoMove()
     {
-        if (_undoStack.Count == 0)
-            throw new InvalidOperationException("No moves to undo.");
-
-        var (state, move) = _undoStack.Pop();
-        _redoStack.Push(new GameSnapshot(_state, move));
-
-        _state = state;
-        _evaluator.Evaluate(_state);
+        if (!_game.TryUndoMove())
+            throw new InvalidOperationException("No move to undo.");
+            
+        _evaluator.Evaluate(_game.CurrentState);
     }
 
     public void RedoMove()
     {
-        if (_redoStack.Count == 0)
-            throw new InvalidOperationException("No moves to redo.");
+        if (!_game.TryRedoMove())
+            throw new InvalidOperationException("No move to redo.");
 
-        var (state, move) = _redoStack.Pop();
-        _undoStack.Push(new GameSnapshot(_state, move));
+        _evaluator.Evaluate(_game.CurrentState);
+    }
 
-        _state = _state.ApplyMove(move!);
-        _evaluator.Evaluate(_state);
+    public void StartNewGame()
+    {
+        _game = new GameSession(_factory.CreateInitialState());
+        _evaluator.Evaluate(_game.CurrentState);
     }
 
     public void LoadState(string serializedState)
     {
-        _state = _stateSerializer.Deserialize(serializedState);
-        _evaluator.Evaluate(_state);
-        _undoStack.Clear();
-        _redoStack.Clear();
+        _game = new GameSession(_stateSerializer.Deserialize(serializedState));
+        _evaluator.Evaluate(_game.CurrentState);
     }
     
     public string ExportState()
     {
-        return _stateSerializer.Serialize(_state);
+        return _stateSerializer.Serialize(_game.CurrentState);
     }
 
     public bool IsGameOver()
     {
-        _evaluator.Evaluate(_state);
-        return _state.Result != GameResult.Ongoing;
+        _evaluator.Evaluate(_game.CurrentState);
+        return _game.CurrentState.Result != GameResult.Ongoing;
     }
 }
