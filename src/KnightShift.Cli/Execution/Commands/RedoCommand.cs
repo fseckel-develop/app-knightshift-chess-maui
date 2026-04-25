@@ -6,7 +6,14 @@ public class RedoCommand : ICommand
 {
     private readonly IGameService _game;
 
-    public string Name => "redo";
+    public CommandInfo Info => new(
+        Name: "redo",
+        Aliases: ["r"],
+        Parameter: null,
+        Description: "Redo last move",
+        Category: "Game",
+        Order: 2
+    );
 
     public RedoCommand(IGameService game)
     {
@@ -14,7 +21,10 @@ public class RedoCommand : ICommand
     }
 
     public bool CanHandle(string input)
-        => input.Equals(Name, StringComparison.OrdinalIgnoreCase);
+    {
+        return input.Equals(Info.Name, StringComparison.OrdinalIgnoreCase) ||
+            Info.Aliases.Any(alias => input.Equals(alias, StringComparison.OrdinalIgnoreCase));
+    }
 
     public Task ExecuteAsync(string input)
     {

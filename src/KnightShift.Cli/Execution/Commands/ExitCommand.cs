@@ -2,10 +2,20 @@ namespace KnightShift.Cli.Execution.Commands;
 
 public class ExitCommand : ICommand
 {
-    public string Name => "exit";
+    public CommandInfo Info => new(
+        Name: "exit",
+        Aliases: ["quit", "x", "q"],
+        Parameter: null,
+        Description: "Exit the application",
+        Category: "System",
+        Order: 0
+    );
 
     public bool CanHandle(string input)
-        => input.Equals("exit", StringComparison.OrdinalIgnoreCase);
+    {
+        return input.Equals(Info.Name, StringComparison.OrdinalIgnoreCase) ||
+            Info.Aliases.Any(alias => input.Equals(alias, StringComparison.OrdinalIgnoreCase));
+    }
 
     public Task ExecuteAsync(string input)
     {

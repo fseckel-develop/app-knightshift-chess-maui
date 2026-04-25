@@ -1,18 +1,14 @@
 using KnightShift.Application.Contracts.Interfaces;
-using KnightShift.Cli.Execution.Commands;
-using KnightShift.Cli.Parsing;
 
 namespace KnightShift.Cli.Execution;
 
 public class CommandLoop
 {
-    private readonly CommandParser _parser;
-    private readonly IGameService _game;
+    private readonly CommandRegistry _registry;
 
-    public CommandLoop(CommandParser parser, IGameService game)
+    public CommandLoop(CommandRegistry registry)
     {
-        _parser = parser;
-        _game = game;
+        _registry = registry;
     }
 
     public async Task RunAsync()
@@ -25,7 +21,7 @@ public class CommandLoop
             if (string.IsNullOrWhiteSpace(input))
                 continue;
 
-            var command = _parser.Parse(input);
+            var command = _registry.FindCommand(input);
 
             if (command is null)
             {
