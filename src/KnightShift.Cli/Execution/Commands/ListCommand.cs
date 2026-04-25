@@ -2,19 +2,29 @@ using KnightShift.Application.Contracts.Interfaces;
 
 namespace KnightShift.Cli.Execution.Commands;
 
-public class ListMovesCommand : ICommand
+public class ListCommand : ICommand
 {
     private readonly IGameService _game;
 
-    public string Name => "list";
+    public CommandInfo Info => new(
+        Name: "list",
+        Aliases: ["l", "moves"],
+        Parameter: "[square]",
+        Description: "List legal moves",
+        Category: "View",
+        Order: 0
+    );
 
-    public ListMovesCommand(IGameService game)
+    public ListCommand(IGameService game)
     {
         _game = game;
     }
 
     public bool CanHandle(string input)
-        => input.StartsWith(Name, StringComparison.OrdinalIgnoreCase);
+    {
+        return input.StartsWith(Info.Name, StringComparison.OrdinalIgnoreCase) ||
+            Info.Aliases.Any(alias => input.StartsWith(alias, StringComparison.OrdinalIgnoreCase));
+    }
 
     public Task ExecuteAsync(string input)
     {

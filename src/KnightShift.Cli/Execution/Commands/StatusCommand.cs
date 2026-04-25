@@ -7,7 +7,14 @@ public class StatusCommand : ICommand
 {
     private readonly IGameService _game;
 
-    public string Name => "status";
+    public CommandInfo Info => new(
+        Name: "status",
+        Aliases: ["info"],
+        Parameter: null,
+        Description: "Show game status",
+        Category: "View",
+        Order: 2
+    );
 
     public StatusCommand(IGameService game)
     {
@@ -15,7 +22,10 @@ public class StatusCommand : ICommand
     }
 
     public bool CanHandle(string input)
-        => input.Equals(Name, StringComparison.OrdinalIgnoreCase);
+    {
+        return input.Equals(Info.Name, StringComparison.OrdinalIgnoreCase) ||
+            Info.Aliases.Any(alias => input.Equals(alias, StringComparison.OrdinalIgnoreCase));
+    }
 
     public Task ExecuteAsync(string input)
     {

@@ -2,20 +2,20 @@ using KnightShift.Application.Contracts.Interfaces;
 
 namespace KnightShift.Cli.Execution.Commands;
 
-public class UndoCommand : ICommand
+public class NewCommand : ICommand
 {
     private readonly IGameService _game;
 
     public CommandInfo Info => new(
-        Name: "undo",
-        Aliases: ["u"],
+        Name: "new",
+        Aliases: ["n", "reset", "start"],
         Parameter: null,
-        Description: "Undo last move",
+        Description: "Start new game",
         Category: "Game",
-        Order: 1
+        Order: 3
     );
 
-    public UndoCommand(IGameService game)
+    public NewCommand(IGameService game)
     {
         _game = game;
     }
@@ -28,16 +28,8 @@ public class UndoCommand : ICommand
 
     public Task ExecuteAsync(string input)
     {
-        try
-        {
-            var state = _game.GetState();
-            _game.UndoMove();
-            Console.WriteLine($"Move {state.LastMove!.Origin}{state.LastMove!.Target} undone.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
+        _game.StartNewGame();
+        Console.WriteLine("New game started.");
         return Task.CompletedTask;
     }
 }

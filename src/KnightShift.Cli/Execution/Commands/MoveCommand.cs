@@ -7,7 +7,14 @@ public class MoveCommand : ICommand
     private readonly IGameService _game;
     private readonly IMoveSerializer _serializer;
 
-    public string Name => "move";
+    public CommandInfo Info => new(
+        Name: "move",
+        Aliases: ["m", "play"],
+        Parameter: "{uci}",
+        Description: "Play move (e.g. move e2e4)",
+        Category: "Game",
+        Order: 0
+    );
 
     public MoveCommand(IGameService game, IMoveSerializer serializer)
     {
@@ -39,7 +46,7 @@ public class MoveCommand : ICommand
     private string ExtractMove(string input)
     {
         var trimmed = input.Trim();
-        if (trimmed.StartsWith(Name, StringComparison.OrdinalIgnoreCase))
+        if (trimmed.StartsWith(Info.Name, StringComparison.OrdinalIgnoreCase))
             return trimmed[5..].Trim();
 
         return trimmed;

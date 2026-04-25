@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using KnightShift.Cli.Execution;
 using KnightShift.Cli.Execution.Commands;
-using KnightShift.Cli.Parsing;
 
 namespace KnightShift.Cli.DependencyInjection;
 
@@ -11,21 +10,22 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<App>();
         services.AddScoped<CommandLoop>();
-        services.AddScoped<CommandParser>();
+        services.AddScoped<CommandRegistry>();
 
         services.AddScoped<ICommand, MoveCommand>();
-        services.AddScoped<ICommand, ListMovesCommand>();
-        services.AddScoped<ICommand, ShowBoardCommand>();
-        services.AddScoped<ICommand, StatusCommand>();
-        services.AddScoped<ICommand, HistoryCommand>();
-        services.AddScoped<ICommand, FenCommand>();
-
-        services.AddScoped<ICommand, NewGameCommand>();
-        services.AddScoped<ICommand, LoadCommand>();
         services.AddScoped<ICommand, UndoCommand>();
         services.AddScoped<ICommand, RedoCommand>();
-        services.AddScoped<ICommand, ExitCommand>();
+        services.AddScoped<ICommand, NewCommand>();
 
+        services.AddScoped<ICommand, ListCommand>();
+        services.AddScoped<ICommand, BoardCommand>();
+        services.AddScoped<ICommand, StatusCommand>();
+        services.AddScoped<ICommand, HistoryCommand>();
+
+        services.AddScoped<ICommand, LoadCommand>();
+        services.AddScoped<ICommand, FenCommand>();
+
+        services.AddScoped<ICommand, ExitCommand>();
         services.AddScoped<ICommand, HelpCommand>();
 
         return services;
