@@ -7,7 +7,14 @@ public class HistoryCommand : ICommand
     private readonly IGameService _game;
     private readonly IMoveFormatter _formatter;
 
-    public string Name => "history";
+    public CommandInfo Info => new(
+        Name: "history",
+        Aliases: ["san"],
+        Parameter: null,
+        Description: "Show move history (SAN)",
+        Category: "View",
+        Order: 3
+    );
 
     public HistoryCommand(IGameService game, IMoveFormatter formatter)
     {
@@ -16,7 +23,10 @@ public class HistoryCommand : ICommand
     }
 
     public bool CanHandle(string input)
-        => input.Equals(Name, StringComparison.OrdinalIgnoreCase);
+    {
+        return input.Equals(Info.Name, StringComparison.OrdinalIgnoreCase) ||
+            Info.Aliases.Any(alias => input.Equals(alias, StringComparison.OrdinalIgnoreCase));
+    }
 
     public Task ExecuteAsync(string input)
     {
