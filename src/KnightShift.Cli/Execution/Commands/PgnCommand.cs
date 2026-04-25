@@ -2,20 +2,20 @@ using KnightShift.Application.Contracts.Interfaces;
 
 namespace KnightShift.Cli.Execution.Commands;
 
-public class FenCommand : ICommand
+public class PgnCommand : ICommand
 {
     private readonly IGameService _game;
 
     public CommandInfo Info => new(
-        Name: "fen",
-        Aliases: ["save-state"],
+        Name: "pgn",
+        Aliases: ["save-game"],
         Parameter: "{file}",
-        Description: "Export FEN to file",
+        Description: "Export PGN to file",
         Category: "Import/Export",
-        Order: 1
+        Order: 2
     );
 
-    public FenCommand(IGameService game)
+    public PgnCommand(IGameService game)
     {
         _game = game;
     }
@@ -45,13 +45,13 @@ public class FenCommand : ICommand
             return Task.CompletedTask;
         }
 
-        if (!fileName.EndsWith(".fen"))
-            fileName += ".fen";
+        if (!fileName.EndsWith(".pgn"))
+            fileName += ".pgn";
 
-        var fen = _game.ExportState();
-        File.WriteAllText(fileName, fen);
+        var pgn = _game.ExportGame();
+        File.WriteAllText(fileName, pgn);
 
-        Console.WriteLine($"FEN saved to {fileName}");
+        Console.WriteLine($"PGN saved to {fileName}");
         return Task.CompletedTask;
     }
 }
