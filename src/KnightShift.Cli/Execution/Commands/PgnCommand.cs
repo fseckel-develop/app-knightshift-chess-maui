@@ -2,20 +2,20 @@ using KnightShift.Application.Contracts.Interfaces;
 
 namespace KnightShift.Cli.Execution.Commands;
 
-public class FenCommand : ICommand
+public class PgnCommand : ICommand
 {
     private readonly IGameService _game;
 
     public CommandInfo Info => new(
-        Name: "fen",
-        Aliases: ["export-fen", "save-fen"],
+        Name: "pgn",
+        Aliases: ["export-pgn", "save-pgn"],
         Parameter: "[file]",
-        Description: "Show FEN or save to file",
+        Description: "Show PGN or save to file",
         Category: "Import/Export",
-        Order: 1
+        Order: 2
     );
 
-    public FenCommand(IGameService game)
+    public PgnCommand(IGameService game)
     {
         _game = game;
     }
@@ -28,7 +28,7 @@ public class FenCommand : ICommand
 
     public Task ExecuteAsync(string input)
     {
-        var fen = _game.ExportState();
+        var pgn = _game.ExportGame();
 
         var commandParts = input.Trim()
             .Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
@@ -40,15 +40,15 @@ public class FenCommand : ICommand
             if (fileName.Contains(' '))
                 throw new InvalidOperationException("Invalid file name.");
 
-            if (!fileName.EndsWith(".fen"))
-                fileName += ".fen";
+            if (!fileName.EndsWith(".pgn"))
+                fileName += ".pgn";
 
-            File.WriteAllText(fileName, fen);
-            Console.WriteLine($"FEN saved to {fileName}");
+            File.WriteAllText(fileName, pgn);
+            Console.WriteLine($"PGN saved to {fileName}");
         }
         else
         {
-            Console.WriteLine(fen);
+            Console.WriteLine(pgn);
         }
 
         return Task.CompletedTask;
