@@ -11,7 +11,7 @@ public class App
 
     public void Run()
     {
-        Console.WriteLine("KnightShift CLI");
+        Console.Title = "KnightShift CLI";
         _loop.RunAsync().GetAwaiter().GetResult();
     }
 }
