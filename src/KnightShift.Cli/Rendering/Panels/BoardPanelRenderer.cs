@@ -1,11 +1,12 @@
 using KnightShift.Application.Contracts.DTOs;
 using KnightShift.Domain.Constants;
+using KnightShift.Cli.Rendering.Core;
 
-namespace KnightShift.Cli.Rendering;
+namespace KnightShift.Cli.Rendering.Panels;
 
-public static class BoardRenderer
+public static class BoardPanelRenderer
 {
-    public static string RenderBoard(GameStateDto state)
+    public static string Render(GameStateDto state)
     {
         using var renderer = new StringWriter();
 
@@ -41,7 +42,7 @@ public static class BoardRenderer
             renderer.Write($" {rank} ");
             renderer.Write(Ansi.ResetColor());
 
-            renderer.WriteLine("");
+            renderer.WriteLine(Ansi.ResetColor());
 
             if (row < 7)
                 RenderMiddleBorder(renderer);
@@ -50,7 +51,7 @@ public static class BoardRenderer
         RenderBottomBorder(renderer);
         RenderFiles(renderer);
 
-        return renderer.ToString();
+        return FrameRenderer.RenderFrame(renderer.ToString());
     }
 
     private static bool IsDarkSquare(int row, int column)

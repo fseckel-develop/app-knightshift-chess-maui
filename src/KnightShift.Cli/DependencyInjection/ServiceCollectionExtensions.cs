@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using KnightShift.Cli.Execution;
 using KnightShift.Cli.Execution.Commands;
+using KnightShift.Cli.Rendering;
 
 namespace KnightShift.Cli.DependencyInjection;
 
@@ -9,6 +10,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddCli(this IServiceCollection services)
     {
         services.AddScoped<App>();
+        services.AddScoped<UiRenderer>();
         services.AddScoped<CommandLoop>();
         services.AddScoped<CommandRegistry>();
 

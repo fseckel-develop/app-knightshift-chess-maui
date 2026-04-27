@@ -1,5 +1,5 @@
 using KnightShift.Application.Contracts.Interfaces;
-using KnightShift.Cli.Rendering;
+using KnightShift.Cli.Rendering.Panels;
 
 namespace KnightShift.Cli.Execution.Commands;
 
@@ -30,9 +30,8 @@ public class BoardCommand : ICommand
     public Task ExecuteAsync(string input)
     {
         var state = _game.GetState();
-        var board = BoardRenderer.RenderBoard(state);
-        var framed = TextFrameRenderer.RenderFrame(board);
-        Console.Write(framed);
+        var board = BoardPanelRenderer.Render(state);
+        Console.Write(board);
         
         return Task.CompletedTask;
     }
