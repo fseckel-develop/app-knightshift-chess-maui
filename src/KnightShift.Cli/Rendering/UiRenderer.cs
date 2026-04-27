@@ -7,7 +7,14 @@ namespace KnightShift.Cli.Rendering;
 
 public class UiRenderer
 {
-    public static string Render(UiState state)
+    private readonly ContentResolver _resolver;
+
+    public UiRenderer(ContentResolver resolver)
+    {
+        _resolver = resolver;
+    }
+
+    public string Render(UiState state)
     {
         var boardPanel = BoardPanelRenderer.Render(state.Game);
 
@@ -26,9 +33,11 @@ public class UiRenderer
         var leftPanelLines = leftPanel.Split('\n');
         int rightPanelHeight = leftPanelLines.Length;
 
+        var rightPanelContent = _resolver.Resolve(state);
+
         var rightPanel = ContentPanelRenderer.Render(
             state.ContentType,
-            state.PanelContent,
+            rightPanelContent,
             rightPanelHeight
         );
 

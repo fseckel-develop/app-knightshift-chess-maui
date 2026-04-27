@@ -8,11 +8,13 @@ public class CommandLoop
 {
     private readonly CommandRegistry _registry;
     private readonly IGameService _game;
+    private readonly UiRenderer _renderer;
     private readonly UiState _uiState;
 
-    public CommandLoop(CommandRegistry registry, IGameService game)
+    public CommandLoop(CommandRegistry registry, UiRenderer renderer, IGameService game)
     {
         _registry = registry;
+        _renderer = renderer;
         _game = game;
         
         _uiState = new UiState
@@ -29,7 +31,7 @@ public class CommandLoop
         {
             Console.Clear();
 
-            var ui = UiRenderer.Render(_uiState);
+            var ui = _renderer.Render(_uiState);
             Console.WriteLine(ui);
             Console.Write("> ");
 
@@ -79,10 +81,6 @@ public class CommandLoop
         _uiState.ContentType = result.ContentType is not null 
             ? result.ContentType.Value 
             : UiContent.History;
-        
-        _uiState.PanelContent = result.PanelContent is not null
-            ? result.PanelContent
-            : [""];
 
         _uiState.StatusMessage = result.Message is not null
             ? result.Message

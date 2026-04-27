@@ -36,38 +36,19 @@ public class ListCommand : ICommand
             string? square = commandParts.Length == 2 ? commandParts[1] : null;
             string squareSuffix = square is not null ? $" from {square}" : "";
 
-            var moves = square is not null
-                ? _game.GetLegalMoves(square).ToList()
-                : _game.GetLegalMoves().ToList();
-                        
-            var noun = (moves.Count == 1) ? "move" : "moves";
-
-            var content = new List<string>();
-
-            const int columnWidth = 8;
-
-            for (int i = 0; i < moves.Count; i += 3)
-            {
-                string Format(int index)
-                {
-                    if (index >= moves.Count)
-                        return "".PadRight(columnWidth);
-
-                    var move = moves[index];
-                    return $"{move.Origin}{move.Target}".PadRight(columnWidth);
-                }
-
-                var column1 = Format(i);
-                var column2 = Format(i + 1);
-                var column3 = Format(i + 2);
-
-                content.Add($" {column1} {column2} {column3}");
-            }
+            var movesCount = square is not null
+                ? _game.GetLegalMoves(square).Count()
+                : _game.GetLegalMoves().Count();
+            
+            var noun = (movesCount == 1) ? "move" : "moves";
 
             return Task.FromResult(new CommandResult
             {
                 ContentType = UiContent.Moves,
-                PanelContent = [.. content],
+                ContentState = new MovesContentState
+                { 
+                    OriginSquare = square
+                },
                 Message = movesCount == 0
                     ? $"Found no legal moves{squareSuffix}."
                     : $"Found {movesCount} legal {noun}{squareSuffix}."

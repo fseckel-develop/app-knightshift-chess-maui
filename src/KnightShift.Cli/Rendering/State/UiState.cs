@@ -7,6 +7,6 @@ public class UiState
     public GameStateDto Game { get; set; } = default!;
     public UiMode Mode { get; set; } = UiMode.Dashboard;
     public UiContent ContentType { get; set; } = UiContent.History;
-    public string[] PanelContent { get; set; } = [];
+    public object? ContentState { get; set; }
     public string StatusMessage { get; set; } = " ";
 }
