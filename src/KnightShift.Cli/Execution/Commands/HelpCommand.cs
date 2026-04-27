@@ -1,3 +1,5 @@
+using KnightShift.Cli.Rendering.State;
+
 namespace KnightShift.Cli.Execution.Commands;
 
 public class HelpCommand : ICommand
@@ -24,61 +26,75 @@ public class HelpCommand : ICommand
             Info.Aliases.Any(alias => input.Equals(alias, StringComparison.OrdinalIgnoreCase));
     }
 
-    public Task ExecuteAsync(string input)
+    public Task<CommandResult> ExecuteAsync(string input)
     {
         if (!_commands.Any())
         {
-            Console.WriteLine("No commands available.");
-            return Task.CompletedTask;
+            return Task.FromResult(new CommandResult
+            {
+                Message = "No commands available."
+            });
         }
-        
-        int namesWidth = _commands.Max(command => command.Info.Name.Length) + 2;
-        int parametersWidth = _commands.Max(command => (command.Info.Parameter ?? "").Length) + 2;
-        int aliasesWidth = _commands.Max(command => 
-            command.Info.Aliases.Any() ? $"({string.Join(", ", command.Info.Aliases)})".Length : 0) + 2;
 
-        Console.WriteLine("Available commands:\n");
-
-        var order = new[] { "Game", "View", "Import/Export", "System" };
+        var categoryOrder = new[] { "Game", "View", "Import/Export", "System" };
 
         var grouped = _commands
             .GroupBy(command => command.Info.Category)
             .OrderBy(group =>
             {
-                var index = Array.IndexOf(order, group.Key);
+                var index = Array.IndexOf(categoryOrder, group.Key);
                 return index >= 0 ? index : int.MaxValue;
             });
 
-        Console.WriteLine($"  {"<uci>".PadRight(namesWidth)}{"".PadRight(parametersWidth + aliasesWidth)}{"Directly play move (e.g. e2e4)"}");
+        var entries = grouped
+            .SelectMany(group => group)
+            .Select(BuildCommandLabel)
+            .ToList();
+
+        int commandWidth = entries.Max(entry => entry.Length) + 4;
+
+        var content = new List<string>
+        {
+            "",
+            $"   {"<uci>".PadRight(commandWidth)}Shortcut for move (e.g. e2e4)",
+            ""
+        };
 
         foreach (var group in grouped)
         {
-            var entries = group
-                .Select(command => new
-                {
-                    command.Info.Name,
-                    command.Info.Order,
-                    Parameters = string.IsNullOrWhiteSpace(command.Info.Parameter) ? "" : command.Info.Parameter,
-                    Aliases = command.Info.Aliases.Any() ? $"({string.Join(", ", command.Info.Aliases)})" : "",
-                    command.Info.Description
-                })
-                .OrderBy(command => command.Order)
-                .ThenBy(command => command.Name)
-                .ToList();
+            var ordered = group
+                .OrderBy(command => command.Info.Order)
+                .ThenBy(command => command.Info.Name);
 
-            foreach (var entry in entries)
+            foreach (var command in ordered)
             {
-                Console.WriteLine(
-                    $"  {entry.Name.PadRight(namesWidth)}" +
-                    $"{entry.Parameters.PadRight(parametersWidth)}" +
-                    $"{entry.Aliases.PadRight(aliasesWidth)}" +
-                    $"{entry.Description}"
-                );
+                var label = BuildCommandLabel(command);
+                content.Add($"   {label.PadRight(commandWidth)}{command.Info.Description}");
             }
 
-            Console.WriteLine();
+            content.Add("");
         }
 
-        return Task.CompletedTask;
+        return Task.FromResult(new CommandResult
+        {
+            ContentType = UiContent.Help,
+            PanelContent = [.. content],
+            Message = "Showing available commands."
+        });
+    }
+
+    private static string BuildCommandLabel(ICommand command)
+    {
+        var name = command.Info.Name;
+
+        var aliases = command.Info.Aliases.Any()
+            ? $"({string.Join(", ", command.Info.Aliases)})"
+            : "";
+
+        var parameter = string.IsNullOrWhiteSpace(command.Info.Parameter)
+            ? ""
+            : command.Info.Parameter;
+
+        return $"{name} {aliases} {parameter}".Trim();
     }
 }

@@ -26,23 +26,27 @@ public class FenCommand : ICommand
             Info.Aliases.Any(alias => input.StartsWith(alias, StringComparison.OrdinalIgnoreCase));
     }
 
-    public Task ExecuteAsync(string input)
+    public Task<CommandResult> ExecuteAsync(string input)
     {
         var commandParts = input.Trim()
             .Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
 
         if (commandParts.Length < 2)
         {
-            Console.WriteLine("No file name provided.");
-            return Task.CompletedTask;
+            return Task.FromResult(new CommandResult
+            {
+                Message = "No file name provided."
+            });
         }
 
         var fileName = commandParts[1];
 
         if (fileName.Contains(' '))
         {
-            Console.WriteLine("Invalid file name.");
-            return Task.CompletedTask;
+            return Task.FromResult(new CommandResult
+            {
+                Message = "Invalid file name."
+            });
         }
 
         if (!fileName.EndsWith(".fen"))
@@ -51,7 +55,9 @@ public class FenCommand : ICommand
         var fen = _game.ExportState();
         File.WriteAllText(fileName, fen);
 
-        Console.WriteLine($"FEN saved to {fileName}");
-        return Task.CompletedTask;
+        return Task.FromResult(new CommandResult
+        {
+            Message = $"FEN saved to {fileName}."
+        });
     }
 }

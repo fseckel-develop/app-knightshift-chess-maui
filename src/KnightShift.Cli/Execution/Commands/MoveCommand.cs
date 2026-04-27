@@ -28,19 +28,26 @@ public class MoveCommand : ICommand
         return _serializer.TryDeserialize(move, out _);
     }
 
-    public Task ExecuteAsync(string input)
+    public Task<CommandResult> ExecuteAsync(string input)
     {
         try
         {
             var move = ExtractMove(input);
             _game.ApplyMove(move);
-            Console.WriteLine($"Move played: {move}");
+            
+            return Task.FromResult(new CommandResult
+            {
+                Message = $"Move {move} was played.",
+                RefreshGameState = true
+            });
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Invalid move: {ex.Message}");
+            return Task.FromResult(new CommandResult
+            {
+                Message = ex.Message
+            });
         }
-        return Task.CompletedTask;
     }
 
     private string ExtractMove(string input)

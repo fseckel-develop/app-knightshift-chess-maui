@@ -8,7 +8,7 @@ public class LoadCommand : ICommand
 
     public CommandInfo Info => new(
         Name: "load",
-        Aliases: ["import", "open"],
+        Aliases: ["open"],
         Parameter: "{fen|pgn|file}",
         Description: "Load game from input",
         Category: "Import/Export",
@@ -26,53 +26,61 @@ public class LoadCommand : ICommand
             Info.Aliases.Any(alias => input.StartsWith(alias, StringComparison.OrdinalIgnoreCase));
     }
 
-    public Task ExecuteAsync(string input)
+    public Task<CommandResult> ExecuteAsync(string input)
     {
         var commandParts = input.Trim()
             .Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
 
         if (commandParts.Length < 2)
         {
-            Console.WriteLine("Usage: load {fen|pgn|file}");
-            return Task.CompletedTask;
+            return Task.FromResult(new CommandResult
+            {
+                Message = "No payload or file name provided."
+            });
         }
 
         var payload = commandParts[1];
 
-        string content;
-
-        if (File.Exists(payload))
-        {
-            content = File.ReadAllText(payload);
-        }
-        else
-        {
-            content = payload;
-        }
+        string content = File.Exists(payload)
+            ? File.ReadAllText(payload)
+            : payload;
 
         try
         {
             if (LooksLikePgn(content))
             {
                 _game.LoadGame(content);
-                Console.WriteLine("PGN loaded.");
+
+                return Task.FromResult(new CommandResult
+                {
+                    Message = "PGN loaded.",
+                    RefreshGameState = true
+                });
             }
-            else if (LooksLikeFen(content))
+
+            if (LooksLikeFen(content))
             {
                 _game.LoadState(content);
-                Console.WriteLine("FEN loaded.");
+
+                return Task.FromResult(new CommandResult
+                {
+                    Message = "FEN loaded.",
+                    RefreshGameState = true
+                });
             }
-            else
+
+            return Task.FromResult(new CommandResult
             {
-                Console.WriteLine("Unknown format.");
-            }
+                Message = "Unknown format."
+            });
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Loading failed: {ex.Message}");
+            return Task.FromResult(new CommandResult
+            {
+                Message = ex.Message
+            });
         }
-
-        return Task.CompletedTask;
     }
 
     private static bool LooksLikePgn(string input)

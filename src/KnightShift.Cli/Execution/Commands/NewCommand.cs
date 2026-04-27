@@ -26,10 +26,14 @@ public class NewCommand : ICommand
             Info.Aliases.Any(alias => input.Equals(alias, StringComparison.OrdinalIgnoreCase));
     }
 
-    public Task ExecuteAsync(string input)
+    public Task<CommandResult> ExecuteAsync(string input)
     {
         _game.StartNewGame();
-        Console.WriteLine("New game started.");
-        return Task.CompletedTask;
+
+        return Task.FromResult(new CommandResult
+        {
+            Message = "New game started.",
+            RefreshGameState = true
+        });
     }
 }
