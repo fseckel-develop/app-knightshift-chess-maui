@@ -27,24 +27,26 @@ public class StatusCommand : ICommand
             Info.Aliases.Any(alias => input.Equals(alias, StringComparison.OrdinalIgnoreCase));
     }
 
-    public Task ExecuteAsync(string input)
+    public Task<CommandResult> ExecuteAsync(string input)
     {
         var state = _game.GetState();
 
         if (state.GameResult != GameResultDto.Ongoing)
         {
-            Console.WriteLine($"Game over: {state.GameEndReason}");
+            return Task.FromResult(new CommandResult
+            {
+                Message = $"Game over: {state.GameEndReason}"
+            });
         }
-        else
+
+        var message = $"Turn: {state.CurrentTurn}";
+
+        if (state.CurrentIsInCheck)
+            message += " (Check!)";
+
+        return Task.FromResult(new CommandResult
         {
-            Console.Write($"Turn: {state.CurrentTurn}");
-
-            if (state.CurrentIsInCheck)
-                Console.Write(" (Check!)");
-            
-            Console.WriteLine();
-        }
-
-        return Task.CompletedTask;
+            Message = message
+        });
     }
 }

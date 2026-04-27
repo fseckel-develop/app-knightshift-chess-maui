@@ -1,4 +1,5 @@
 using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Cli.Rendering.State;
 
 namespace KnightShift.Cli.Execution.Commands;
 
@@ -8,7 +9,7 @@ public class ListCommand : ICommand
 
     public CommandInfo Info => new(
         Name: "list",
-        Aliases: ["l", "moves"],
+        Aliases: ["moves"],
         Parameter: "[square]",
         Description: "List legal moves",
         Category: "View",
@@ -26,33 +27,59 @@ public class ListCommand : ICommand
             Info.Aliases.Any(alias => input.StartsWith(alias, StringComparison.OrdinalIgnoreCase));
     }
 
-    public Task ExecuteAsync(string input)
+    public Task<CommandResult> ExecuteAsync(string input)
     {
         try
         {
-            var listAndSquare = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var commandParts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-            var moves = (listAndSquare.Length == 2)
-                ? _game.GetLegalMoves(listAndSquare[1])
-                : _game.GetLegalMoves();
+            string? square = commandParts.Length == 2 ? commandParts[1] : null;
+            string squareSuffix = square is not null ? $" from {square}" : "";
 
-            if (!moves.Any())
+            var moves = square is not null
+                ? _game.GetLegalMoves(square).ToList()
+                : _game.GetLegalMoves().ToList();
+                        
+            var noun = (moves.Count == 1) ? "move" : "moves";
+
+            var content = new List<string>();
+
+            const int columnWidth = 8;
+
+            for (int i = 0; i < moves.Count; i += 3)
             {
-                Console.WriteLine("No legal moves.");
-                return Task.CompletedTask;
+                string Format(int index)
+                {
+                    if (index >= moves.Count)
+                        return "".PadRight(columnWidth);
+
+                    var move = moves[index];
+                    return $"{move.Origin}{move.Target}".PadRight(columnWidth);
+                }
+
+                var column1 = Format(i);
+                var column2 = Format(i + 1);
+                var column3 = Format(i + 2);
+
+                content.Add($" {column1} {column2} {column3}");
             }
 
-            foreach (var move in moves)
+            return Task.FromResult(new CommandResult
             {
-                Console.Write($"{move.Origin}{move.Target} ");
-            }
-            Console.WriteLine();
+                ContentType = UiContent.Moves,
+                PanelContent = [.. content],
+                Message = movesCount == 0
+                    ? $"Found no legal moves{squareSuffix}."
+                    : $"Found {movesCount} legal {noun}{squareSuffix}."
+            });
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            return Task.FromResult(new CommandResult
+            {
+                ContentType = UiContent.Moves,
+                Message = ex.Message
+            });
         }
-
-        return Task.CompletedTask;
     }
 }

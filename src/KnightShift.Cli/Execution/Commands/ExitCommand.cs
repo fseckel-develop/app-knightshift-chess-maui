@@ -17,9 +17,11 @@ public class ExitCommand : ICommand
             Info.Aliases.Any(alias => input.Equals(alias, StringComparison.OrdinalIgnoreCase));
     }
 
-    public Task ExecuteAsync(string input)
+    public Task<CommandResult> ExecuteAsync(string input)
     {
-        Environment.Exit(0);
-        return Task.CompletedTask;
+        return Task.FromResult(new CommandResult
+        {
+            ExitRequested = true
+        });
     }
 }

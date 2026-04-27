@@ -26,18 +26,27 @@ public class RedoCommand : ICommand
             Info.Aliases.Any(alias => input.Equals(alias, StringComparison.OrdinalIgnoreCase));
     }
 
-    public Task ExecuteAsync(string input)
+    public Task<CommandResult> ExecuteAsync(string input)
     {
         try
         {
             _game.RedoMove();
             var state = _game.GetState();
-            Console.WriteLine($"Move {state.LastMove!.Origin}{state.LastMove!.Target} redone.");
+
+            var move = state.LastMove!;
+
+            return Task.FromResult(new CommandResult
+            {
+                Message = $"Move {move.Origin}{move.Target} redone.",
+                RefreshGameState = true
+            });
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            return Task.FromResult(new CommandResult
+            {
+                Message = ex.Message
+            });
         }
-        return Task.CompletedTask;
     }
 }

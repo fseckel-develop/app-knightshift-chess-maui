@@ -26,18 +26,25 @@ public class UndoCommand : ICommand
             Info.Aliases.Any(alias => input.Equals(alias, StringComparison.OrdinalIgnoreCase));
     }
 
-    public Task ExecuteAsync(string input)
+    public Task<CommandResult> ExecuteAsync(string input)
     {
         try
         {
             var state = _game.GetState();
             _game.UndoMove();
-            Console.WriteLine($"Move {state.LastMove!.Origin}{state.LastMove!.Target} undone.");
+
+            return Task.FromResult(new CommandResult
+            {
+                Message = $"Move {state.LastMove!.Origin}{state.LastMove!.Target} undone.",
+                RefreshGameState = true
+            });
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            return Task.FromResult(new CommandResult
+            {
+                Message = ex.Message
+            });
         }
-        return Task.CompletedTask;
     }
 }
