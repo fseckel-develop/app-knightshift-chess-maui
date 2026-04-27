@@ -7,15 +7,19 @@ namespace KnightShift.Cli.Execution;
 public class CommandLoop
 {
     private readonly CommandRegistry _registry;
-    private readonly IGameService _game;
     private readonly UiRenderer _renderer;
+    private readonly UiStateUpdater _updater;
     private readonly UiState _uiState;
 
-    public CommandLoop(CommandRegistry registry, UiRenderer renderer, IGameService game)
+    public CommandLoop(
+        CommandRegistry registry, 
+        UiRenderer renderer, 
+        UiStateUpdater updater,
+        IGameService game)
     {
         _registry = registry;
         _renderer = renderer;
-        _game = game;
+        _updater = updater;
         
         _uiState = new UiState
         { 
@@ -66,24 +70,7 @@ public class CommandLoop
                 break;
             }
 
-            ApplyResult(result);
+            _updater.Apply(_uiState, result);
         }
-    }
-
-    private void ApplyResult(CommandResult result)
-    {
-        if (result.RefreshGameState)
-        {
-            _uiState.Game = _game.GetState();
-            _uiState.ContentType = UiContent.History;
-        }
-
-        _uiState.ContentType = result.ContentType is not null 
-            ? result.ContentType.Value 
-            : UiContent.History;
-
-        _uiState.StatusMessage = result.Message is not null
-            ? result.Message
-            : "";
     }
 }

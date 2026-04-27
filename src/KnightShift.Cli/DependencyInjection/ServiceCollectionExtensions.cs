@@ -3,6 +3,7 @@ using KnightShift.Cli.Execution;
 using KnightShift.Cli.Execution.Commands;
 using KnightShift.Cli.Rendering.Content;
 using KnightShift.Cli.Rendering;
+using KnightShift.Cli.Rendering.State;
 
 namespace KnightShift.Cli.DependencyInjection;
 
@@ -15,6 +16,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IContentProvider, HistoryContentProvider>();
         services.AddScoped<IContentProvider, MovesContentProvider>();
         services.AddScoped<ContentResolver>();
+        services.AddScoped<UiStateUpdater>();
         services.AddScoped<UiRenderer>();
         services.AddScoped<CommandLoop>();
         services.AddScoped<CommandRegistry>();
