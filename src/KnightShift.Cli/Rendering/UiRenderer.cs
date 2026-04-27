@@ -16,13 +16,22 @@ public class UiRenderer
 
         var messagePanel = MessagePanelRenderer.Render(state.StatusMessage, panelWidth);
 
-        var leftPanels = VerticalLayout.Combine(
+        var leftPanel = VerticalLayout.Combine(
         [
             boardPanel,
             new string(' ', panelWidth),
             messagePanel
         ]);
 
-        return leftPanels;
+        var leftPanelLines = leftPanel.Split('\n');
+        int rightPanelHeight = leftPanelLines.Length;
+
+        var rightPanel = ContentPanelRenderer.Render(
+            state.ContentType,
+            state.PanelContent,
+            rightPanelHeight
+        );
+
+        return HorizontalLayout.Combine(leftPanel, rightPanel);
     }
 }
