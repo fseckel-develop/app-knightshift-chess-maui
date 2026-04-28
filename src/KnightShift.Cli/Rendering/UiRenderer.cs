@@ -16,6 +16,16 @@ public class UiRenderer
 
     public string Render(UiState state)
     {
+        return state.Mode switch
+        {
+            UiMode.Dashboard => RenderDashboard(state),
+            UiMode.Sequential => RenderSequential(state),
+            _ => ""
+        };
+    }
+
+    private string RenderDashboard(UiState state)
+    {
         var boardPanel = BoardPanelRenderer.Render(state.Game);
 
         var boardPanelLines = boardPanel.Split('\n');
@@ -42,5 +52,27 @@ public class UiRenderer
         );
 
         return HorizontalLayout.Combine(leftPanel, rightPanel);
+    }
+
+    private string RenderSequential(UiState state)
+    {
+        var output = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(state.StatusMessage))
+            output.Add("  " + state.StatusMessage);
+
+        var content = _resolver.Resolve(state);
+
+        if (content.Length > 0 && content.Any(line => !string.IsNullOrWhiteSpace(line)))
+        {
+            if (!string.IsNullOrWhiteSpace(state.StatusMessage))
+                output.Add("");
+            
+            output.AddRange(content);
+        }
+
+        output.Add("");
+
+        return string.Join(Environment.NewLine, output);
     }
 }

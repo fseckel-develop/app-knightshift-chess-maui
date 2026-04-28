@@ -35,8 +35,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICommand, FenCommand>();
         services.AddScoped<ICommand, PgnCommand>();
 
-        services.AddScoped<ICommand, ExitCommand>();
+        services.AddScoped<ICommand, UiModeCommand>();
         services.AddScoped<ICommand, HelpCommand>();
+        services.AddScoped<ICommand, ExitCommand>();
 
         return services;
     }

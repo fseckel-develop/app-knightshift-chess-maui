@@ -33,13 +33,15 @@ public class CommandLoop
     {
         while (true)
         {
-            Console.Clear();
+            if (_uiState.Mode == UiMode.Dashboard)
+                Console.Clear();
 
             var ui = _renderer.Render(_uiState);
             Console.WriteLine(ui);
             Console.Write("> ");
 
             var input = Console.ReadLine() ?? "";
+            var previousMode = _uiState.Mode;
 
             if (string.IsNullOrWhiteSpace(input))
                 continue;
@@ -66,11 +68,17 @@ public class CommandLoop
 
             if (result.ExitRequested)
             {
-                Console.WriteLine("  Exiting the application ... \n");
+                Console.WriteLine("  Shutting down KnightShift CLI ... Bye! \n");
                 break;
             }
 
             _updater.Apply(_uiState, result);
+
+            if (previousMode != _uiState.Mode)
+            {
+                Console.Clear();
+                Console.WriteLine("> " + input);
+            }
         }
     }
 }

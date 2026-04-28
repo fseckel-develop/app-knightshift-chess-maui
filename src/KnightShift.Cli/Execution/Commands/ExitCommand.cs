@@ -8,7 +8,7 @@ public class ExitCommand : ICommand
         Parameter: null,
         Description: "Exit the application",
         Category: "System",
-        Order: 0
+        Order: 2
     );
 
     public bool CanHandle(string input)
