@@ -36,7 +36,7 @@ public static class ContentPanelRenderer
     {
         UiContent.Moves   => 24,
         UiContent.History => 24,
-        UiContent.Help    => 65,
+        UiContent.Help    => 62,
         _                 => 24
     };
 

@@ -5,6 +5,12 @@ namespace KnightShift.Cli.Rendering.Content;
 
 public class HistoryContentProvider : IContentProvider
 {
+    private record HistoryEntry(
+        int MoveNumber, 
+        string WhiteSan, 
+        string BlackSan
+    );
+
     private readonly IGameService _game;
     private readonly IMoveFormatter _formatter;
 
@@ -18,12 +24,63 @@ public class HistoryContentProvider : IContentProvider
 
     public string[] GetContent(UiState state)
     {
-        var history = _game.GetHistory().ToList();
+        return state.Mode switch
+        {
+            UiMode.Dashboard => GetDashboardHistory(),
+            UiMode.Sequential => GetSequentialHistory(),
+            _ => [""]
+        };
+    }
 
-        if (history.Count == 0)
+    private string[] GetDashboardHistory()
+    {
+        var historyEntries = BuildHistoryEntries();
+
+        if (historyEntries.Count == 0)
             return [""];
 
-        var content = new List<string>();
+        return [.. historyEntries
+            .Select(entry => $" {entry.MoveNumber,2}.  {entry.WhiteSan,-8} {entry.BlackSan,-8}")
+        ];
+    }
+
+    private string[] GetSequentialHistory()
+    {
+        var historyEntries = BuildHistoryEntries();
+
+        if (historyEntries.Count == 0)
+            return [""];
+
+        var historyParts = historyEntries
+            .Select(entry => $"{entry.MoveNumber}. {entry.WhiteSan} {entry.BlackSan}".Trim())
+            .ToList();
+
+        const int maxWidth = 80;
+        var history = new List<string>();
+        var currentLine = "";
+
+        foreach (var historyPart in historyParts)
+        {
+            if ((currentLine + historyPart).Length > maxWidth)
+            {
+                history.Add("  " + currentLine.Trim());
+                currentLine = "";
+            }
+
+            currentLine += historyPart + "  ";
+        }
+
+        if (!string.IsNullOrWhiteSpace(currentLine))
+            history.Add("  " + currentLine.Trim());
+
+        return [.. history];
+    }
+
+    private List<HistoryEntry> BuildHistoryEntries()
+    {
+        var history = _game.GetHistory().ToList();
+
+        var result = new List<HistoryEntry>();
 
         for (int i = 0; i < history.Count; i += 2)
         {
@@ -36,19 +93,19 @@ public class HistoryContentProvider : IContentProvider
                 whiteMoveStep.StateAfterMove
             );
 
-            var blackMoveStep = i + 1 < history.Count ? history[i + 1] : null;
+            var blackStep = i + 1 < history.Count ? history[i + 1] : null;
 
-            var blackSan = blackMoveStep is not null
+            var blackMoveSan = blackStep is not null
                 ? _formatter.Format(
-                    blackMoveStep.Move,
-                    blackMoveStep.StateBeforeMove,
-                    blackMoveStep.StateAfterMove
+                    blackStep.Move,
+                    blackStep.StateBeforeMove,
+                    blackStep.StateAfterMove
                 )
                 : "";
 
-            content.Add($" {moveNumber,2}.  {whiteSan,-8} {blackSan,-8}");
+            result.Add(new HistoryEntry(moveNumber, whiteSan, blackMoveSan));
         }
 
-        return [.. content];
+        return result;
     }
 }
