@@ -60,6 +60,15 @@ public class UiRenderer
 
         if (!string.IsNullOrWhiteSpace(state.StatusMessage))
             output.Add("  " + state.StatusMessage);
+        
+        if (state.PrintBoard)
+        {
+            var board = BoardPanelRenderer.Render(state.Game);
+            if (output.Count > 0)
+                output.Add("");
+
+            output.AddRange(board.Split("\n").Select(line => "  " + line));
+        }
 
         var content = _resolver.Resolve(state);
 
