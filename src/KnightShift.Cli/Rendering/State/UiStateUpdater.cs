@@ -17,13 +17,27 @@ public class UiStateUpdater
         if (result.RefreshGameState)
         {
             state.Game = _game.GetState();
-            state.ContentType = UiContent.History;
         }
 
         state.StatusMessage = result.Message ?? "";
 
-        state.ContentType = result.ContentType ?? UiContent.History;
+        state.Mode = result.Mode ?? state.Mode;
 
-        state.ContentState = result.ContentState;
+        if (result.ContentType is not null)
+        {
+            state.ContentType = result.ContentType.Value;
+            state.ContentState = result.ContentState;
+        }
+        else
+        {
+            state.ContentType = state.Mode switch
+            {
+                UiMode.Dashboard => UiContent.History,
+                UiMode.Sequential => UiContent.None,
+                _ => UiContent.None
+            };
+
+            state.ContentState = null;
+        }
     }
 }
