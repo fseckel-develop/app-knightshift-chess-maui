@@ -43,19 +43,19 @@ public class CommandLoop
 
             if (string.IsNullOrWhiteSpace(input))
                 continue;
-
-            var command = _registry.FindCommand(input);
-
-            if (command is null)
-            {
-                _uiState.StatusMessage = "Unknown command.";
-                continue;
-            }
-
+            
             CommandResult result;
 
             try
             {
+                var command = _registry.FindCommand(input);
+
+                if (command is null)
+                {
+                    _uiState.StatusMessage = "Unknown command.";
+                    continue;
+                }
+
                 result = await command.ExecuteAsync(input);
             }
             catch (Exception ex)
