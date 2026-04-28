@@ -35,15 +35,18 @@ public class HelpContentProvider : IContentProvider
             ? entries.Max(entry => entry.Length) + 3
             : 10;
 
-        var content = new List<string>
-        {
-            "",
-            $"   {"<uci>".PadRight(commandWidth)}Shortcut for move (e.g. e2e4)",
-            ""
-        };
+        var content = new List<string>();
+
+        if (state.Mode == UiMode.Dashboard)
+            content.Add("");
+            
+        content.Add($"  {"<uci>".PadRight(commandWidth)}Shortcut for move (e.g. e2e4)");
 
         foreach (var group in grouped)
         {
+            if (state.Mode == UiMode.Dashboard)
+                content.Add("");
+
             var ordered = group
                 .OrderBy(command => command.Info.Order)
                 .ThenBy(command => command.Info.Name);
@@ -51,10 +54,8 @@ public class HelpContentProvider : IContentProvider
             foreach (var command in ordered)
             {
                 var label = BuildCommandLabel(command);
-                content.Add($"   {label.PadRight(commandWidth)}{command.Info.Description}");
+                content.Add($"  {label.PadRight(commandWidth)}{command.Info.Description}");
             }
-
-            content.Add("");
         }
 
         return [.. content];
