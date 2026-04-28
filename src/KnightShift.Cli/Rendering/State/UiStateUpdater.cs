@@ -19,7 +19,14 @@ public class UiStateUpdater
             state.Game = _game.GetState();
         }
 
-        state.StatusMessage = result.Message ?? "";
+        if (state.Mode == UiMode.Dashboard && (result.AutoPrintBoard is not null || result.PrintBoard))
+        {
+            state.StatusMessage = "Only effective in sequential mode.";
+        }
+        else
+        {
+            state.StatusMessage = result.Message ?? "";
+        }
 
         state.Mode = result.Mode ?? state.Mode;
 
@@ -39,5 +46,9 @@ public class UiStateUpdater
 
             state.ContentState = null;
         }
+
+        state.AutoPrintBoard = result.AutoPrintBoard ?? state.AutoPrintBoard;
+
+        state.PrintBoard = result.PrintBoard || (state.AutoPrintBoard && result.RefreshGameState);
     }
 }

@@ -8,6 +8,8 @@ public class CommandResult
     public UiMode? Mode { get; init; }
     public UiContent? ContentType { get; init; }
     public object? ContentState { get; init; }
+    public bool? AutoPrintBoard { get; init; }
+    public bool PrintBoard { get; init; } = false;
     public bool RefreshGameState { get; init; } = false;
     public bool ExitRequested { get; init; } = false;
 }
