@@ -83,6 +83,64 @@ public class GameServiceTests
     }
 
     [Fact]
+    public void ApplyMove_ShouldThrow_OnIllegalMove()
+    {
+        var service = CreateService();
+
+        Assert.Throws<InvalidOperationException>(() =>
+            service.ApplyMove("e2e5")
+        );
+    }
+
+    [Fact]
+    public void UndoMove_ShouldRevertState()
+    {
+        var service = CreateService();
+
+        service.ApplyMove("e2e4");
+        service.UndoMove();
+
+        var state = service.GetState();
+
+        Assert.Equal(PieceColorDto.White, state.CurrentTurn);
+    }
+
+    [Fact]
+    public void UndoMove_ShouldThrow_WhenNoHistory()
+    {
+        var service = CreateService();
+
+        Assert.Throws<InvalidOperationException>(() => service.UndoMove());
+    }
+
+    [Fact]
+    public void RedoMove_ShouldReapplyMove()
+    {
+        var service = CreateService();
+
+        service.ApplyMove("e2e4");
+        service.UndoMove();
+        service.RedoMove();
+
+        var state = service.GetState();
+
+        Assert.Equal(PieceColorDto.Black, state.CurrentTurn);
+    }
+
+    [Fact]
+    public void GetHistory_ShouldReturnMoveSteps()
+    {
+        var service = CreateService();
+
+        service.ApplyMove("e2e4");
+        service.ApplyMove("e7e5");
+
+        var history = service.GetHistory().ToList();
+
+        Assert.Equal(2, history.Count);
+    }
+
+    [Fact]
     public void LoadState_ThenExportState_ShouldBeConsistent()
     {
         var service = CreateService();
@@ -93,6 +151,36 @@ public class GameServiceTests
         var result = service.ExportState();
 
         Assert.Equal(fen, result);
+    }
+
+    [Fact]
+    public void ExportGame_ThenLoadGame_ShouldPreserveState()
+    {
+        var service = CreateService();
+
+        service.ApplyMove("e2e4");
+        service.ApplyMove("e7e5");
+
+        var exported = service.ExportGame();
+
+        var newService = CreateService();
+        newService.LoadGame(exported);
+
+        var state = newService.GetState();
+
+        Assert.Equal(PieceColorDto.White, state.CurrentTurn);
+    }
+
+    [Fact]
+    public void GetState_ShouldIndicateCheck()
+    {
+        var service = CreateService();
+
+        service.LoadState("4k3/8/8/8/8/8/4R3/4K3 b - -");
+
+        var state = service.GetState();
+
+        Assert.True(state.CurrentIsInCheck);
     }
 
     [Fact]
