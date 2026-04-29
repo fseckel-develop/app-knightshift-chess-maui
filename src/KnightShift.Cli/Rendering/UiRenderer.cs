@@ -7,9 +7,9 @@ namespace KnightShift.Cli.Rendering;
 
 public class UiRenderer
 {
-    private readonly ContentResolver _resolver;
+    private readonly IContentResolver _resolver;
 
-    public UiRenderer(ContentResolver resolver)
+    public UiRenderer(IContentResolver resolver)
     {
         _resolver = resolver;
     }

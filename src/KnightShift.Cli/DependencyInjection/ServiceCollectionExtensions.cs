@@ -15,7 +15,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IContentProvider, HelpContentProvider>();
         services.AddScoped<IContentProvider, HistoryContentProvider>();
         services.AddScoped<IContentProvider, MovesContentProvider>();
-        services.AddScoped<ContentResolver>();
+        services.AddScoped<IContentResolver, ContentResolver>();
+
         services.AddScoped<UiStateUpdater>();
         services.AddScoped<UiRenderer>();
         services.AddScoped<CommandLoop>();

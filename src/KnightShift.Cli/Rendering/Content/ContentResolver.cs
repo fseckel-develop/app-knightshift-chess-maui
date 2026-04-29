@@ -2,7 +2,7 @@ using KnightShift.Cli.Rendering.State;
 
 namespace KnightShift.Cli.Rendering.Content;
 
-public class ContentResolver
+public class ContentResolver : IContentResolver
 {
     private readonly Dictionary<UiContent, IContentProvider> _providers;
 
