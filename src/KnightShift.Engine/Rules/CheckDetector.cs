@@ -5,7 +5,7 @@ using KnightShift.Engine.Moves.Generators;
 
 namespace KnightShift.Engine.Rules;
 
-public class CheckDetector
+public class CheckDetector : ICheckDetector
 {
     private readonly Dictionary<PieceType, IPieceMoveGenerator> _generators;
 

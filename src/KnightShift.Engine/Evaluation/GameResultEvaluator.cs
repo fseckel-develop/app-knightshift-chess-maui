@@ -5,12 +5,12 @@ using KnightShift.Engine.Rules;
 
 namespace KnightShift.Engine.Evaluation;
 
-public class GameResultEvaluator
+public class GameResultEvaluator : IGameResultEvaluator
 {
     private readonly IMoveGenerator _moveGenerator;
-    private readonly CheckDetector _checkDetector;
+    private readonly ICheckDetector _checkDetector;
 
-    public GameResultEvaluator(IMoveGenerator moveGenerator, CheckDetector checkDetector)
+    public GameResultEvaluator(IMoveGenerator moveGenerator, ICheckDetector checkDetector)
     {
         _moveGenerator = moveGenerator;
         _checkDetector = checkDetector;

@@ -2,11 +2,11 @@ using KnightShift.Domain.Core;
 
 namespace KnightShift.Engine.Rules;
 
-public class MoveValidator
+public class MoveValidator : IMoveValidator
 {
-    private readonly CheckDetector _checkDetector;
+    private readonly ICheckDetector _checkDetector;
 
-    public MoveValidator(CheckDetector checkDetector)
+    public MoveValidator(ICheckDetector checkDetector)
     {
         _checkDetector = checkDetector;
     }

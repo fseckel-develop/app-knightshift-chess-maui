@@ -12,7 +12,7 @@ namespace KnightShift.Application.Services;
 public class GameService : IGameService
 {
     private readonly IMoveGenerator _moveGenerator;
-    private readonly GameResultEvaluator _evaluator;
+    private readonly IGameResultEvaluator _evaluator;
     private readonly IGameStateFactory _factory;
     private readonly IGameStateSerializer _stateSerializer;
     private readonly IMoveSerializer _moveSerializer;
@@ -23,7 +23,7 @@ public class GameService : IGameService
 
     public GameService(
         IMoveGenerator moveGenerator,
-        GameResultEvaluator evaluator,
+        IGameResultEvaluator evaluator,
         IGameStateFactory factory,
         IGameStateSerializer stateSerializer,
         IMoveSerializer moveSerializer,

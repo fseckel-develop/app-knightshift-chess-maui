@@ -8,10 +8,10 @@ namespace KnightShift.Infrastructure.Notation;
 
 public class SanMoveFormatter : IMoveFormatter
 {
-    private readonly GameResultEvaluator _evaluator;
+    private readonly IGameResultEvaluator _evaluator;
     private readonly IMoveGenerator _generator;
 
-    public SanMoveFormatter(GameResultEvaluator evaluator, IMoveGenerator generator)
+    public SanMoveFormatter(IGameResultEvaluator evaluator, IMoveGenerator generator)
     {
         _evaluator = evaluator;
         _generator = generator;

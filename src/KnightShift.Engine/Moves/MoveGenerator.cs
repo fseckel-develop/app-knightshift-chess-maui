@@ -7,10 +7,10 @@ namespace KnightShift.Engine.Moves;
 
 public class MoveGenerator : IMoveGenerator
 {
-    private readonly MoveValidator _moveValidator;
+    private readonly IMoveValidator _moveValidator;
     private readonly Dictionary<PieceType, IPieceMoveGenerator> _generators;
 
-    public MoveGenerator(MoveValidator moveValidator)
+    public MoveGenerator(IMoveValidator moveValidator)
     {
         _moveValidator = moveValidator;
         _generators = new ()
