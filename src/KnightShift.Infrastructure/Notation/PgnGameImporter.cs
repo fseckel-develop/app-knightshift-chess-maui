@@ -7,11 +7,16 @@ namespace KnightShift.Infrastructure.Notation;
 public class PgnGameImporter : IGameImporter
 {
     private readonly IGameStateSerializer _serializer;
+    private readonly IGameStateFactory _factory;
     private readonly SanMoveResolver _resolver;
 
-    public PgnGameImporter(IGameStateSerializer serializer, SanMoveResolver resolver)
+    public PgnGameImporter(
+        IGameStateSerializer serializer, 
+        IGameStateFactory factory, 
+        SanMoveResolver resolver)
     {
         _serializer = serializer;
+        _factory = factory;
         _resolver = resolver;
     }
 
@@ -20,7 +25,7 @@ public class PgnGameImporter : IGameImporter
         var fen = ExtractFen(pgn);
         var initialState = fen is not null
             ? _serializer.Deserialize(fen)
-            : new GameState();
+            : _factory.CreateInitialState();
 
         var moves = new List<Move>();
         var currentState = initialState;
