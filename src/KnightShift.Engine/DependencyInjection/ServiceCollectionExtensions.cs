@@ -9,10 +9,10 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddEngine(this IServiceCollection services)
     {
-        services.AddScoped<CheckDetector>();
-        services.AddScoped<MoveValidator>();
+        services.AddScoped<ICheckDetector, CheckDetector>();
+        services.AddScoped<IMoveValidator, MoveValidator>();
         services.AddScoped<IMoveGenerator, MoveGenerator>();
-        services.AddScoped<GameResultEvaluator>();
+        services.AddScoped<IGameResultEvaluator, GameResultEvaluator>();
 
         return services;
     }
