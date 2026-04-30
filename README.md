@@ -7,6 +7,8 @@
 ![Status](https://img.shields.io/badge/Status-In%20Development-yellow)
 [![CI](https://github.com/fseckel-develop/app-knightshift-chess-maui/actions/workflows/ci.yml/badge.svg)](https://github.com/fseckel-develop/app-knightshift-chess-maui/actions/workflows/ci.yml)
 
+**[This README is outdated. Made Improvements to the code will be documented here soon. For more detailed information about the development please check out the well-maintained commit history and the structured source and test directories.**
+
 **KnightShift** is planned to be a cross-platform chess application built with **.NET MAUI**, powered by a custom-designed chess engine implemented in C#.
 
 The project will combine:
