@@ -10,6 +10,10 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IGameService, GameService>();
 
+        services.AddScoped<GameCommandService>();
+        services.AddScoped<GameQueryService>();
+        services.AddScoped<GameStorageService>();
+
         return services;
     }
 }
