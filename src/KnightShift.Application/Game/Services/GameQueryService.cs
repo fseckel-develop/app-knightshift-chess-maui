@@ -1,12 +1,12 @@
 using KnightShift.Application.Contracts.DTOs;
 using KnightShift.Application.Mappers;
-using KnightShift.Application.Game;
+using KnightShift.Application.Game.Models;
 using KnightShift.Engine.Moves;
 using KnightShift.Engine.Evaluation;
 using KnightShift.Domain.Enums;
 using KnightShift.Domain.Core;
 
-namespace KnightShift.Application.Services;
+namespace KnightShift.Application.Game.Services;
 
 public class GameQueryService
 {

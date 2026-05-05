@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using KnightShift.Application.Contracts.Interfaces;
-using KnightShift.Application.Services;
+using KnightShift.Application.Game.Services;
 
 namespace KnightShift.Application.DependencyInjection;
 

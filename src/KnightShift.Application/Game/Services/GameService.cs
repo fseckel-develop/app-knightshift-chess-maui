@@ -1,8 +1,8 @@
 using KnightShift.Application.Contracts.Interfaces;
 using KnightShift.Application.Contracts.DTOs;
-using KnightShift.Application.Game;
+using KnightShift.Application.Game.Models;
 
-namespace KnightShift.Application.Services;
+namespace KnightShift.Application.Game.Services;
 
 public class GameService : IGameService
 {

@@ -1,6 +1,6 @@
 using KnightShift.Domain.Core;
 
-namespace KnightShift.Application.Game;
+namespace KnightShift.Application.Game.Models;
 
 public sealed record MoveStep
 (

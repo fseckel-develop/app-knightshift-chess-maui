@@ -1,9 +1,9 @@
 using KnightShift.Application.Contracts.Interfaces;
-using KnightShift.Application.Game;
+using KnightShift.Application.Game.Models;
 using KnightShift.Engine.Moves;
 using KnightShift.Engine.Evaluation;
 
-namespace KnightShift.Application.Services;
+namespace KnightShift.Application.Game.Services;
 
 public class GameCommandService
 {

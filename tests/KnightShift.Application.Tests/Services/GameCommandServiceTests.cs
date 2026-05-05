@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using KnightShift.Application.Contracts.Interfaces;
 using KnightShift.Application.DependencyInjection;
-using KnightShift.Application.Services;
-using KnightShift.Application.Game;
+using KnightShift.Application.Game.Services;
+using KnightShift.Application.Game.Models;
 using KnightShift.Infrastructure.DependencyInjection;
 using KnightShift.Engine.DependencyInjection;
 using KnightShift.Domain.Enums;

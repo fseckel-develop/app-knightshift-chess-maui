@@ -1,5 +1,5 @@
 using KnightShift.Application.Contracts.DTOs;
-using KnightShift.Application.Game;
+using KnightShift.Application.Game.Models;
 using KnightShift.Domain.Core;
 
 namespace KnightShift.Cli.Tests.Helpers;

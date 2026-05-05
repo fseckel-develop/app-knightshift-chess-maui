@@ -1,4 +1,4 @@
-using KnightShift.Application.Game;
+using KnightShift.Application.Game.Models;
 
 namespace KnightShift.Application.Contracts.Interfaces;
 
