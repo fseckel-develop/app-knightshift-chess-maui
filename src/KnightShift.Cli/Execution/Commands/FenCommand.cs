@@ -1,10 +1,10 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases.ExportState;
 
 namespace KnightShift.Cli.Execution.Commands;
 
 public class FenCommand : ICommand
 {
-    private readonly IGameService _game;
+    private readonly ExportStateHandler _handler;
 
     public CommandInfo Info => new(
         Name: "fen",
@@ -15,9 +15,9 @@ public class FenCommand : ICommand
         Order: 1
     );
 
-    public FenCommand(IGameService game)
+    public FenCommand(ExportStateHandler handler)
     {
-        _game = game;
+        _handler = handler;
     }
 
     public bool CanHandle(string input)
@@ -52,7 +52,7 @@ public class FenCommand : ICommand
         if (!fileName.EndsWith(".fen"))
             fileName += ".fen";
 
-        var fen = _game.ExportState();
+        var fen = _handler.Handle(new ExportStateQuery());
         File.WriteAllText(fileName, fen);
 
         return Task.FromResult(new CommandResult

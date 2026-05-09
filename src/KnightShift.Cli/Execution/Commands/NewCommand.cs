@@ -1,10 +1,10 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases.NewGame;
 
 namespace KnightShift.Cli.Execution.Commands;
 
 public class NewCommand : ICommand
 {
-    private readonly IGameService _game;
+    private readonly NewGameHandler _handler;
 
     public CommandInfo Info => new(
         Name: "new",
@@ -15,9 +15,9 @@ public class NewCommand : ICommand
         Order: 3
     );
 
-    public NewCommand(IGameService game)
+    public NewCommand(NewGameHandler hander)
     {
-        _game = game;
+        _handler = hander;
     }
 
     public bool CanHandle(string input)
@@ -28,7 +28,7 @@ public class NewCommand : ICommand
 
     public Task<CommandResult> ExecuteAsync(string input)
     {
-        _game.StartNewGame();
+        _handler.Handle(new NewGameCommand());
 
         return Task.FromResult(new CommandResult
         {

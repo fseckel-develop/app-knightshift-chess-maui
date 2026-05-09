@@ -1,10 +1,10 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases.ExportGame;
 
 namespace KnightShift.Cli.Execution.Commands;
 
 public class PgnCommand : ICommand
 {
-    private readonly IGameService _game;
+    private readonly ExportGameHandler _handler;
 
     public CommandInfo Info => new(
         Name: "pgn",
@@ -15,9 +15,9 @@ public class PgnCommand : ICommand
         Order: 2
     );
 
-    public PgnCommand(IGameService game)
+    public PgnCommand(ExportGameHandler handler)
     {
-        _game = game;
+        _handler = handler;
     }
 
     public bool CanHandle(string input)
@@ -52,7 +52,7 @@ public class PgnCommand : ICommand
         if (!fileName.EndsWith(".pgn"))
             fileName += ".pgn";
 
-        var pgn = _game.ExportGame();
+        var pgn = _handler.Handle(new ExportGameQuery());
         File.WriteAllText(fileName, pgn);
 
         return Task.FromResult(new CommandResult

@@ -1,10 +1,10 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases.UndoMove;
 
 namespace KnightShift.Cli.Execution.Commands;
 
 public class UndoCommand : ICommand
 {
-    private readonly IGameService _game;
+    private readonly UndoMoveHandler _handler;
 
     public CommandInfo Info => new(
         Name: "undo",
@@ -15,9 +15,9 @@ public class UndoCommand : ICommand
         Order: 1
     );
 
-    public UndoCommand(IGameService game)
+    public UndoCommand(UndoMoveHandler handler)
     {
-        _game = game;
+        _handler = handler;
     }
 
     public bool CanHandle(string input)
@@ -30,12 +30,11 @@ public class UndoCommand : ICommand
     {
         try
         {
-            var state = _game.GetState();
-            _game.UndoMove();
+            var undoneMove = _handler.Handle(new UndoMoveCommand());
 
             return Task.FromResult(new CommandResult
             {
-                Message = $"Move {state.LastMove!.Origin}{state.LastMove!.Target} undone.",
+                Message = $"Move {undoneMove!.Origin}{undoneMove!.Target} undone.",
                 RefreshGameState = true
             });
         }

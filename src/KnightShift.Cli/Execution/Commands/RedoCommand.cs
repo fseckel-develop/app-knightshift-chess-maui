@@ -1,10 +1,11 @@
 using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases.RedoMove;
 
 namespace KnightShift.Cli.Execution.Commands;
 
 public class RedoCommand : ICommand
 {
-    private readonly IGameService _game;
+    private readonly RedoMoveHandler _handler;
 
     public CommandInfo Info => new(
         Name: "redo",
@@ -15,9 +16,9 @@ public class RedoCommand : ICommand
         Order: 2
     );
 
-    public RedoCommand(IGameService game)
+    public RedoCommand(RedoMoveHandler handler)
     {
-        _game = game;
+        _handler = handler;
     }
 
     public bool CanHandle(string input)
@@ -30,14 +31,11 @@ public class RedoCommand : ICommand
     {
         try
         {
-            _game.RedoMove();
-            var state = _game.GetState();
-
-            var move = state.LastMove!;
+            var redoneMove = _handler.Handle(new RedoMoveCommand());
 
             return Task.FromResult(new CommandResult
             {
-                Message = $"Move {move.Origin}{move.Target} redone.",
+                Message = $"Move {redoneMove!.Origin}{redoneMove!.Target} redone.",
                 RefreshGameState = true
             });
         }

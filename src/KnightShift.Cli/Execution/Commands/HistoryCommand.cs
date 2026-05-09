@@ -1,11 +1,11 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases.GetHistory;
 using KnightShift.Cli.Rendering.State;
 
 namespace KnightShift.Cli.Execution.Commands;
 
 public class HistoryCommand : ICommand
 {
-    private readonly IGameService _game;
+    private readonly GetHistoryHandler _handler;
 
     public CommandInfo Info => new(
         Name: "history",
@@ -16,9 +16,9 @@ public class HistoryCommand : ICommand
         Order: 3
     );
 
-    public HistoryCommand(IGameService game)
+    public HistoryCommand(GetHistoryHandler handler)
     {
-        _game = game;
+        _handler = handler;
     }
 
     public bool CanHandle(string input)
@@ -29,7 +29,7 @@ public class HistoryCommand : ICommand
 
     public Task<CommandResult> ExecuteAsync(string input)
     {
-        var history = _game.GetHistory().ToList();
+        var history = _handler.Handle(new GetHistoryQuery()).ToList();
 
         if (history.Count == 0)
         {

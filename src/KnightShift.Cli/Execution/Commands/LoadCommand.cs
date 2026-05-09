@@ -1,10 +1,12 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases.LoadGame;
+using KnightShift.Application.UseCases.LoadState;
 
 namespace KnightShift.Cli.Execution.Commands;
 
 public class LoadCommand : ICommand
 {
-    private readonly IGameService _game;
+    private readonly LoadGameHandler _loadGameHandler;
+    private readonly LoadStateHandler _loadStateHandler;
 
     public CommandInfo Info => new(
         Name: "load",
@@ -15,9 +17,10 @@ public class LoadCommand : ICommand
         Order: 0
     );
 
-    public LoadCommand(IGameService game)
+    public LoadCommand(LoadGameHandler loadGameHandler, LoadStateHandler loadStateHandler)
     {
-        _game = game;
+        _loadGameHandler = loadGameHandler;
+        _loadStateHandler = loadStateHandler;
     }
 
     public bool CanHandle(string input)
@@ -49,7 +52,7 @@ public class LoadCommand : ICommand
         {
             if (LooksLikePgn(content))
             {
-                _game.LoadGame(content);
+                _loadGameHandler.Handle(new LoadGameCommand(content));
 
                 return Task.FromResult(new CommandResult
                 {
@@ -60,7 +63,7 @@ public class LoadCommand : ICommand
 
             if (LooksLikeFen(content))
             {
-                _game.LoadState(content);
+                _loadStateHandler.Handle(new LoadStateCommand(content));
 
                 return Task.FromResult(new CommandResult
                 {

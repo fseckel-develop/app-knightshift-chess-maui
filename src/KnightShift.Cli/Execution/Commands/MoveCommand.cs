@@ -1,10 +1,11 @@
 using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases.PlayMove;
 
 namespace KnightShift.Cli.Execution.Commands;
 
 public class MoveCommand : ICommand
 {
-    private readonly IGameService _game;
+    private readonly PlayMoveHandler _handler;
     private readonly IMoveSerializer _serializer;
 
     public CommandInfo Info => new(
@@ -16,9 +17,9 @@ public class MoveCommand : ICommand
         Order: 0
     );
 
-    public MoveCommand(IGameService game, IMoveSerializer serializer)
+    public MoveCommand(PlayMoveHandler handler, IMoveSerializer serializer)
     {
-        _game = game;
+        _handler = handler;
         _serializer = serializer;
     }
 
@@ -33,7 +34,8 @@ public class MoveCommand : ICommand
         try
         {
             var move = ExtractMove(input);
-            _game.ApplyMove(move);
+            
+            _handler.Handle(new PlayMoveCommand(move));
             
             return Task.FromResult(new CommandResult
             {

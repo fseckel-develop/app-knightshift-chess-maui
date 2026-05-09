@@ -1,22 +1,22 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases.GetState;
 using KnightShift.Cli.Execution;
 
 namespace KnightShift.Cli.Rendering.State;
 
 public class UiStateUpdater
 {
-    private readonly IGameService _game;
+    private readonly GetStateHandler _handler;
 
-    public UiStateUpdater(IGameService game)
+    public UiStateUpdater(GetStateHandler handler)
     {
-        _game = game;
+        _handler = handler;
     }
 
     public void Apply(UiState state, CommandResult result)
     {
         if (result.RefreshGameState)
         {
-            state.Game = _game.GetState();
+            state.Game = _handler.Handle(new GetStateQuery());
         }
 
         if (state.Mode == UiMode.Dashboard && (result.AutoPrintBoard is not null || result.PrintBoard))

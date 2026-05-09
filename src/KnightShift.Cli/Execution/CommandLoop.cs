@@ -1,4 +1,4 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases.GetState;
 using KnightShift.Cli.Rendering.State;
 using KnightShift.Cli.Rendering;
 
@@ -15,7 +15,7 @@ public class CommandLoop
         CommandRegistry registry, 
         UiRenderer renderer, 
         UiStateUpdater updater,
-        IGameService game)
+        GetStateHandler getState)
     {
         _registry = registry;
         _renderer = renderer;
@@ -23,7 +23,7 @@ public class CommandLoop
         
         _uiState = new UiState
         { 
-            Game = game.GetState(),
+            Game = getState.Handle(new GetStateQuery()),
             ContentType = UiContent.Help,
             StatusMessage = "Let's play Chess with KnightShift CLI"
         };

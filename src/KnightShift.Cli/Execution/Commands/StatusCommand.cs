@@ -1,11 +1,11 @@
-using KnightShift.Application.Contracts.Interfaces;
 using KnightShift.Application.Contracts.DTOs;
+using KnightShift.Application.UseCases.GetState;
 
 namespace KnightShift.Cli.Execution.Commands;
 
 public class StatusCommand : ICommand
 {
-    private readonly IGameService _game;
+    private readonly GetStateHandler _handler;
 
     public CommandInfo Info => new(
         Name: "status",
@@ -16,9 +16,9 @@ public class StatusCommand : ICommand
         Order: 2
     );
 
-    public StatusCommand(IGameService game)
+    public StatusCommand(GetStateHandler handler)
     {
-        _game = game;
+        _handler = handler;
     }
 
     public bool CanHandle(string input)
@@ -29,7 +29,7 @@ public class StatusCommand : ICommand
 
     public Task<CommandResult> ExecuteAsync(string input)
     {
-        var state = _game.GetState();
+        var state = _handler.Handle(new GetStateQuery());
 
         if (state.GameResult != GameResultDto.Ongoing)
         {

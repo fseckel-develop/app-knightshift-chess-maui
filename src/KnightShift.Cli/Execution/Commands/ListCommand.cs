@@ -1,11 +1,11 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases.GetMoves;
 using KnightShift.Cli.Rendering.State;
 
 namespace KnightShift.Cli.Execution.Commands;
 
 public class ListCommand : ICommand
 {
-    private readonly IGameService _game;
+    private readonly GetMovesHandler _handler;
 
     public CommandInfo Info => new(
         Name: "list",
@@ -16,9 +16,9 @@ public class ListCommand : ICommand
         Order: 0
     );
 
-    public ListCommand(IGameService game)
+    public ListCommand(GetMovesHandler handler)
     {
-        _game = game;
+        _handler = handler;
     }
 
     public bool CanHandle(string input)
@@ -32,26 +32,20 @@ public class ListCommand : ICommand
         try
         {
             var commandParts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            string? origin = (commandParts.Length == 2) ? commandParts[1] : null;
 
-            string? square = commandParts.Length == 2 ? commandParts[1] : null;
-            string squareSuffix = square is not null ? $" from {square}" : "";
-
-            var movesCount = square is not null
-                ? _game.GetLegalMoves(square).Count()
-                : _game.GetLegalMoves().Count();
+            var moves = _handler.Handle(new GetMovesQuery(origin)).ToList();
             
-            var noun = (movesCount == 1) ? "move" : "moves";
+            var noun = (moves.Count == 1) ? "move" : "moves";
+            var suffix = origin is not null ? $" from {origin}" : "";
 
             return Task.FromResult(new CommandResult
             {
                 ContentType = UiContent.Moves,
-                ContentState = new MovesContentState
-                { 
-                    OriginSquare = square
-                },
-                Message = movesCount == 0
-                    ? $"Found no legal moves{squareSuffix}."
-                    : $"Found {movesCount} legal {noun}{squareSuffix}."
+                ContentState = new MovesContentState { OriginSquare = origin },
+                Message = (moves.Count == 0)
+                    ? $"Found no legal moves{suffix}."
+                    : $"Found {moves.Count} legal {noun}{suffix}."
             });
         }
         catch (Exception ex)
