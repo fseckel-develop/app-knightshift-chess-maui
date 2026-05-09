@@ -3,7 +3,7 @@ using KnightShift.Application.Contracts.DTOs;
 
 namespace KnightShift.Application.UseCases.GetState;
 
-public class GetStateHandler
+public class GetStateHandler : IQueryHandler<GetStateQuery, GameStateDto>
 {
     private readonly IGameService _game;
 

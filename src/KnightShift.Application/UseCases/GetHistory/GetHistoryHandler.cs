@@ -3,7 +3,7 @@ using KnightShift.Application.Game.Models;
 
 namespace KnightShift.Application.UseCases.GetHistory;
 
-public class GetHistoryHandler
+public class GetHistoryHandler : IQueryHandler<GetHistoryQuery, IEnumerable<MoveStep>>
 {
     private readonly IGameService _game;
 

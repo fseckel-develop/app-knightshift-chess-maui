@@ -1,10 +1,11 @@
+using KnightShift.Application.UseCases;
 using KnightShift.Application.UseCases.NewGame;
 
 namespace KnightShift.Cli.Execution.Commands;
 
 public class NewCommand : ICommand
 {
-    private readonly NewGameHandler _handler;
+    private readonly ICommandHandler<NewGameCommand> _handler;
 
     public CommandInfo Info => new(
         Name: "new",
@@ -15,7 +16,7 @@ public class NewCommand : ICommand
         Order: 3
     );
 
-    public NewCommand(NewGameHandler hander)
+    public NewCommand(ICommandHandler<NewGameCommand> hander)
     {
         _handler = hander;
     }

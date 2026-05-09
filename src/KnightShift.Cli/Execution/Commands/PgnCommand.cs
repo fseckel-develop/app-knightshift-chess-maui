@@ -1,10 +1,11 @@
+using KnightShift.Application.UseCases;
 using KnightShift.Application.UseCases.ExportGame;
 
 namespace KnightShift.Cli.Execution.Commands;
 
 public class PgnCommand : ICommand
 {
-    private readonly ExportGameHandler _handler;
+    private readonly IQueryHandler<ExportGameQuery, string> _handler;
 
     public CommandInfo Info => new(
         Name: "pgn",
@@ -15,7 +16,7 @@ public class PgnCommand : ICommand
         Order: 2
     );
 
-    public PgnCommand(ExportGameHandler handler)
+    public PgnCommand(IQueryHandler<ExportGameQuery, string> handler)
     {
         _handler = handler;
     }

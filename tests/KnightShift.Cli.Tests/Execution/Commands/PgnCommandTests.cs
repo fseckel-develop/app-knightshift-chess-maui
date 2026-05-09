@@ -1,4 +1,5 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases;
+using KnightShift.Application.UseCases.ExportGame;
 using KnightShift.Cli.Execution.Commands;
 using NSubstitute;
 
@@ -6,12 +7,21 @@ namespace KnightShift.Cli.Tests.Execution.Commands;
 
 public class PgnCommandTests
 {
-    private readonly IGameService _game = Substitute.For<IGameService>();
+    private readonly IQueryHandler<ExportGameQuery, string> _handler =
+        Substitute.For<IQueryHandler<ExportGameQuery, string>>();
+
     private readonly PgnCommand _command;
 
     public PgnCommandTests()
     {
-        _command = new PgnCommand(_game);
+        _command = new PgnCommand(_handler);
+    }
+
+    [Fact]
+    public void CanHandle_Should_Return_True()
+    {
+        Assert.True(_command.CanHandle("pgn file"));
+        Assert.True(_command.CanHandle("save-game file"));
     }
 
     [Fact]
@@ -36,7 +46,7 @@ public class PgnCommandTests
         var file = Path.GetTempFileName();
         var fileWithoutExtension = Path.ChangeExtension(file, null);
 
-        _game.ExportGame().Returns("test-pgn");
+        _handler.Handle(Arg.Any<ExportGameQuery>()).Returns("test-pgn");
 
         var result = await _command.ExecuteAsync($"pgn {fileWithoutExtension}");
 
@@ -54,7 +64,7 @@ public class PgnCommandTests
     {
         var file = Path.GetTempFileName() + ".pgn";
 
-        _game.ExportGame().Returns("pgn-data");
+        _handler.Handle(Arg.Any<ExportGameQuery>()).Returns("pgn-data");
 
         var result = await _command.ExecuteAsync($"pgn {file}");
 

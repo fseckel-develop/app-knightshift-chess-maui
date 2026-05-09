@@ -1,18 +1,22 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases;
+using KnightShift.Application.UseCases.UndoMove;
 using KnightShift.Application.Contracts.DTOs;
 using KnightShift.Cli.Execution.Commands;
+using KnightShift.Cli.Tests.Helpers;
 using NSubstitute;
 
 namespace KnightShift.Cli.Tests.Execution.Commands;
 
 public class UndoCommandTests
 {
-    private readonly IGameService _game = Substitute.For<IGameService>();
+    private readonly IQueryHandler<UndoMoveCommand, MoveDto?> _handler =
+        Substitute.For<IQueryHandler<UndoMoveCommand, MoveDto?>>();
+
     private readonly UndoCommand _command;
 
     public UndoCommandTests()
     {
-        _command = new UndoCommand(_game);
+        _command = new UndoCommand(_handler);
     }
 
     [Theory]
@@ -26,16 +30,12 @@ public class UndoCommandTests
     [Fact]
     public async Task Execute_Should_Undo_Move()
     {
-        var state = new GameStateDto
-        {
-            LastMove = new MoveDto { Origin = "e2", Target = "e4" }
-        };
-
-        _game.GetState().Returns(state);
+        _handler.Handle(Arg.Any<UndoMoveCommand>()).Returns(TestData.CreateMoveDto("e2", "e4"));
 
         var result = await _command.ExecuteAsync("undo");
 
-        _game.Received().UndoMove();
+        _handler.Received().Handle(Arg.Any<UndoMoveCommand>());
+
         Assert.True(result.RefreshGameState);
         Assert.Equal("Move e2e4 undone.", result.Message);
     }
@@ -43,7 +43,7 @@ public class UndoCommandTests
     [Fact]
     public async Task Execute_Should_Handle_Exception()
     {
-        _game.When(service => service.UndoMove())
+        _handler.When(handler => handler.Handle(Arg.Any<UndoMoveCommand>()))
             .Do(_ => throw new Exception("fail"));
 
         var result = await _command.ExecuteAsync("undo");

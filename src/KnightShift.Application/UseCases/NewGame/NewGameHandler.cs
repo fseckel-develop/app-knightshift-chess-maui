@@ -2,7 +2,7 @@ using KnightShift.Application.Contracts.Interfaces;
 
 namespace KnightShift.Application.UseCases.NewGame;
 
-public class NewGameHandler
+public class NewGameHandler : ICommandHandler<NewGameCommand>
 {
     private readonly IGameService _game;
 

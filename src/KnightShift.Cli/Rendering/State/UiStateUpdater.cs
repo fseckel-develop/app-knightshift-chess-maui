@@ -1,3 +1,5 @@
+using KnightShift.Application.Contracts.DTOs;
+using KnightShift.Application.UseCases;
 using KnightShift.Application.UseCases.GetState;
 using KnightShift.Cli.Execution;
 
@@ -5,9 +7,9 @@ namespace KnightShift.Cli.Rendering.State;
 
 public class UiStateUpdater
 {
-    private readonly GetStateHandler _handler;
+    private readonly IQueryHandler<GetStateQuery, GameStateDto> _handler;
 
-    public UiStateUpdater(GetStateHandler handler)
+    public UiStateUpdater(IQueryHandler<GetStateQuery, GameStateDto> handler)
     {
         _handler = handler;
     }

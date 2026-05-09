@@ -1,4 +1,5 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases;
+using KnightShift.Application.UseCases.ExportState;
 using KnightShift.Cli.Execution.Commands;
 using NSubstitute;
 
@@ -6,12 +7,14 @@ namespace KnightShift.Cli.Tests.Execution.Commands;
 
 public class FenCommandTests
 {
-    private readonly IGameService _game = Substitute.For<IGameService>();
+    private readonly IQueryHandler<ExportStateQuery, string> _handler =
+        Substitute.For<IQueryHandler<ExportStateQuery, string>>();
+
     private readonly FenCommand _command;
 
     public FenCommandTests()
     {
-        _command = new FenCommand(_game);
+        _command = new FenCommand(_handler);
     }
 
     [Fact]
@@ -43,7 +46,7 @@ public class FenCommandTests
         var file = Path.GetTempFileName();
         var fileWithoutExtension = Path.ChangeExtension(file, null);
 
-        _game.ExportState().Returns("test-fen");
+        _handler.Handle(Arg.Any<ExportStateQuery>()).Returns("test-fen");
 
         var result = await _command.ExecuteAsync($"fen {fileWithoutExtension}");
 
@@ -61,7 +64,7 @@ public class FenCommandTests
     {
         var file = Path.GetTempFileName() + ".fen";
 
-        _game.ExportState().Returns("fen-data");
+        _handler.Handle(Arg.Any<ExportStateQuery>()).Returns("fen-data");
 
         var result = await _command.ExecuteAsync($"fen {file}");
 

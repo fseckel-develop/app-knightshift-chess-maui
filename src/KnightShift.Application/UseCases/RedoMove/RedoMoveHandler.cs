@@ -3,7 +3,7 @@ using KnightShift.Application.Contracts.Interfaces;
 
 namespace KnightShift.Application.UseCases.RedoMove;
 
-public class RedoMoveHandler
+public class RedoMoveHandler : IQueryHandler<RedoMoveCommand, MoveDto?>
 {
     private readonly IGameService _game;
 

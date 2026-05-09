@@ -1,19 +1,22 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases;
+using KnightShift.Application.UseCases.RedoMove;
 using KnightShift.Application.Contracts.DTOs;
 using KnightShift.Cli.Execution.Commands;
-using NSubstitute;
 using KnightShift.Cli.Tests.Helpers;
+using NSubstitute;
 
 namespace KnightShift.Cli.Tests.Execution.Commands;
 
 public class RedoCommandTests
 {
-    private readonly IGameService _game = Substitute.For<IGameService>();
+    private readonly IQueryHandler<RedoMoveCommand, MoveDto?> _handler =
+        Substitute.For<IQueryHandler<RedoMoveCommand, MoveDto?>>();
+
     private readonly RedoCommand _command;
 
     public RedoCommandTests()
     {
-        _command = new RedoCommand(_game);
+        _command = new RedoCommand(_handler);
     }
 
     [Theory]
@@ -27,16 +30,12 @@ public class RedoCommandTests
     [Fact]
     public async Task Execute_Should_Redo_Move()
     {
-        var state = new GameStateDto
-        {
-            LastMove = TestData.MoveDto("e2", "e4")
-        };
-
-        _game.GetState().Returns(state);
+        _handler.Handle(Arg.Any<RedoMoveCommand>()).Returns(TestData.CreateMoveDto("e2", "e4"));
 
         var result = await _command.ExecuteAsync("redo");
 
-        _game.Received().RedoMove();
+        _handler.Received().Handle(Arg.Any<RedoMoveCommand>());
+
         Assert.True(result.RefreshGameState);
         Assert.Equal("Move e2e4 redone.", result.Message);
     }
@@ -44,7 +43,7 @@ public class RedoCommandTests
     [Fact]
     public async Task Execute_Should_Handle_Exception()
     {
-        _game.When(service => service.RedoMove())
+        _handler.When(handler => handler.Handle(Arg.Any<RedoMoveCommand>()))
             .Do(_ => throw new Exception("fail"));
 
         var result = await _command.ExecuteAsync("redo");

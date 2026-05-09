@@ -1,11 +1,12 @@
 using KnightShift.Application.Contracts.DTOs;
+using KnightShift.Application.UseCases;
 using KnightShift.Application.UseCases.GetState;
 
 namespace KnightShift.Cli.Execution.Commands;
 
 public class StatusCommand : ICommand
 {
-    private readonly GetStateHandler _handler;
+    private readonly IQueryHandler<GetStateQuery, GameStateDto> _handler;
 
     public CommandInfo Info => new(
         Name: "status",
@@ -16,7 +17,7 @@ public class StatusCommand : ICommand
         Order: 2
     );
 
-    public StatusCommand(GetStateHandler handler)
+    public StatusCommand(IQueryHandler<GetStateQuery, GameStateDto> handler)
     {
         _handler = handler;
     }

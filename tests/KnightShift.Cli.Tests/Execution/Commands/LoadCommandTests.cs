@@ -1,4 +1,6 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases;
+using KnightShift.Application.UseCases.LoadGame;
+using KnightShift.Application.UseCases.LoadState;
 using KnightShift.Cli.Execution.Commands;
 using NSubstitute;
 
@@ -6,12 +8,17 @@ namespace KnightShift.Cli.Tests.Execution.Commands;
 
 public class LoadCommandTests
 {
-    private readonly IGameService _game = Substitute.For<IGameService>();
+    private readonly ICommandHandler<LoadGameCommand> _loadGameHandler =
+        Substitute.For<ICommandHandler<LoadGameCommand>>();
+
+    private readonly ICommandHandler<LoadStateCommand> _loadStateHandler =
+        Substitute.For<ICommandHandler<LoadStateCommand>>();
+
     private readonly LoadCommand _command;
 
     public LoadCommandTests()
     {
-        _command = new LoadCommand(_game);
+        _command = new LoadCommand(_loadGameHandler, _loadStateHandler);
     }
 
     [Fact]
@@ -25,11 +32,12 @@ public class LoadCommandTests
     [Fact]
     public async Task Execute_Should_Load_FEN()
     {
-        var fen = "8/8/8/8/8/8/8/8 w - - 0 1";
+        var fen = "8/8/8/8/8/8/8/8 w - -";
 
         var result = await _command.ExecuteAsync($"load {fen}");
 
-        _game.Received().LoadState(fen);
+        _loadStateHandler.Received().Handle(Arg.Any<LoadStateCommand>());
+
         Assert.True(result.RefreshGameState);
         Assert.Equal("FEN loaded.", result.Message);
     }
@@ -41,14 +49,16 @@ public class LoadCommandTests
 
         var result = await _command.ExecuteAsync($"load {pgn}");
 
-        _game.Received().LoadGame(pgn);
+        _loadGameHandler.Received().Handle(Arg.Any<LoadGameCommand>());
+
+        Assert.True(result.RefreshGameState);
         Assert.Equal("PGN loaded.", result.Message);
     }
 
     [Fact]
     public async Task Execute_Should_Return_Unknown_Format()
     {
-        var result = await _command.ExecuteAsync("load something");
+        var result = await _command.ExecuteAsync("load unknown");
 
         Assert.Equal("Unknown format.", result.Message);
     }
@@ -56,10 +66,12 @@ public class LoadCommandTests
     [Fact]
     public async Task Execute_Should_Handle_Exception()
     {
-        _game.When(service => service.LoadState(Arg.Any<string>()))
-             .Do(_ => throw new Exception("fail"));
+        _loadStateHandler.When(handler => handler.Handle(Arg.Any<LoadStateCommand>()))
+            .Do(_ => throw new Exception("fail"));
 
-        var result = await _command.ExecuteAsync("load 8/8/8/8/8/8/8/8 w - - 0 1");
+        var fen = "8/8/8/8/8/8/8/8 w - -";
+
+        var result = await _command.ExecuteAsync($"load {fen}");
 
         Assert.Equal("fail", result.Message);
     }

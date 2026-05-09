@@ -1,11 +1,12 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.Contracts.DTOs;
+using KnightShift.Application.UseCases;
 using KnightShift.Application.UseCases.RedoMove;
 
 namespace KnightShift.Cli.Execution.Commands;
 
 public class RedoCommand : ICommand
 {
-    private readonly RedoMoveHandler _handler;
+    private readonly IQueryHandler<RedoMoveCommand, MoveDto?> _handler;
 
     public CommandInfo Info => new(
         Name: "redo",
@@ -16,7 +17,7 @@ public class RedoCommand : ICommand
         Order: 2
     );
 
-    public RedoCommand(RedoMoveHandler handler)
+    public RedoCommand(IQueryHandler<RedoMoveCommand, MoveDto?> handler)
     {
         _handler = handler;
     }

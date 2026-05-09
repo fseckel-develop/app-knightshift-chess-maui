@@ -1,11 +1,13 @@
+using KnightShift.Application.UseCases;
 using KnightShift.Application.UseCases.GetHistory;
+using KnightShift.Application.Game.Models;
 using KnightShift.Cli.Rendering.State;
 
 namespace KnightShift.Cli.Execution.Commands;
 
 public class HistoryCommand : ICommand
 {
-    private readonly GetHistoryHandler _handler;
+    private readonly IQueryHandler<GetHistoryQuery, IEnumerable<MoveStep>> _handler;
 
     public CommandInfo Info => new(
         Name: "history",
@@ -16,7 +18,7 @@ public class HistoryCommand : ICommand
         Order: 3
     );
 
-    public HistoryCommand(GetHistoryHandler handler)
+    public HistoryCommand(IQueryHandler<GetHistoryQuery, IEnumerable<MoveStep>> handler)
     {
         _handler = handler;
     }

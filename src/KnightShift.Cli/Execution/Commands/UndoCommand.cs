@@ -1,10 +1,12 @@
+using KnightShift.Application.Contracts.DTOs;
+using KnightShift.Application.UseCases;
 using KnightShift.Application.UseCases.UndoMove;
 
 namespace KnightShift.Cli.Execution.Commands;
 
 public class UndoCommand : ICommand
 {
-    private readonly UndoMoveHandler _handler;
+    private readonly IQueryHandler<UndoMoveCommand, MoveDto?> _handler;
 
     public CommandInfo Info => new(
         Name: "undo",
@@ -15,7 +17,7 @@ public class UndoCommand : ICommand
         Order: 1
     );
 
-    public UndoCommand(UndoMoveHandler handler)
+    public UndoCommand(IQueryHandler<UndoMoveCommand, MoveDto?> handler)
     {
         _handler = handler;
     }

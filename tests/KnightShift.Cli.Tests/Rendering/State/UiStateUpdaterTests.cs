@@ -1,19 +1,21 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases.GetState;
 using KnightShift.Application.Contracts.DTOs;
 using KnightShift.Cli.Execution;
 using KnightShift.Cli.Rendering.State;
 using NSubstitute;
+using KnightShift.Application.UseCases;
 
 namespace KnightShift.Cli.Tests.Rendering.State;
 
 public class UiStateUpdaterTests
 {
-    private readonly IGameService _game = Substitute.For<IGameService>();
+    private readonly IQueryHandler<GetStateQuery, GameStateDto> _handler =
+        Substitute.For<IQueryHandler<GetStateQuery, GameStateDto>>();
     private readonly UiStateUpdater _updater;
 
     public UiStateUpdaterTests()
     {
-        _updater = new UiStateUpdater(_game);
+        _updater = new UiStateUpdater(_handler);
     }
 
     private static UiState CreateState(UiMode mode = UiMode.Dashboard)
@@ -32,7 +34,7 @@ public class UiStateUpdaterTests
     public void Apply_Should_Refresh_Game_State()
     {
         var newState = new GameStateDto();
-        _game.GetState().Returns(newState);
+        _handler.Handle(new GetStateQuery()).Returns(newState);
 
         var state = CreateState();
         var result = new CommandResult { RefreshGameState = true };

@@ -1,10 +1,11 @@
+using KnightShift.Application.UseCases;
 using KnightShift.Application.UseCases.ExportState;
 
 namespace KnightShift.Cli.Execution.Commands;
 
 public class FenCommand : ICommand
 {
-    private readonly ExportStateHandler _handler;
+    private readonly IQueryHandler<ExportStateQuery, string> _handler;
 
     public CommandInfo Info => new(
         Name: "fen",
@@ -15,7 +16,7 @@ public class FenCommand : ICommand
         Order: 1
     );
 
-    public FenCommand(ExportStateHandler handler)
+    public FenCommand(IQueryHandler<ExportStateQuery, string> handler)
     {
         _handler = handler;
     }

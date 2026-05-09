@@ -1,5 +1,6 @@
+using KnightShift.Application.UseCases;
+using KnightShift.Application.UseCases.GetState;
 using KnightShift.Application.Contracts.DTOs;
-using KnightShift.Application.Contracts.Interfaces;
 using KnightShift.Cli.Execution.Commands;
 using NSubstitute;
 
@@ -7,12 +8,14 @@ namespace KnightShift.Cli.Tests.Execution.Commands;
 
 public class StatusCommandTests
 {
-    private readonly IGameService _game = Substitute.For<IGameService>();
+    private readonly IQueryHandler<GetStateQuery, GameStateDto> _handler =
+        Substitute.For<IQueryHandler<GetStateQuery, GameStateDto>>();
+
     private readonly StatusCommand _command;
 
     public StatusCommandTests()
     {
-        _command = new StatusCommand(_game);
+        _command = new StatusCommand(_handler);
     }
 
     [Theory]
@@ -26,7 +29,7 @@ public class StatusCommandTests
     [Fact]
     public async Task Execute_Should_Show_Turn()
     {
-        _game.GetState().Returns(new GameStateDto
+        _handler.Handle(Arg.Any<GetStateQuery>()).Returns(new GameStateDto
         {
             GameResult = GameResultDto.Ongoing,
             CurrentTurn = PieceColorDto.White,
@@ -41,7 +44,7 @@ public class StatusCommandTests
     [Fact]
     public async Task Execute_Should_Show_Check()
     {
-        _game.GetState().Returns(new GameStateDto
+        _handler.Handle(Arg.Any<GetStateQuery>()).Returns(new GameStateDto
         {
             GameResult = GameResultDto.Ongoing,
             CurrentTurn = PieceColorDto.Black,
@@ -56,7 +59,7 @@ public class StatusCommandTests
     [Fact]
     public async Task Execute_Should_Show_GameOver()
     {
-        _game.GetState().Returns(new GameStateDto
+        _handler.Handle(Arg.Any<GetStateQuery>()).Returns(new GameStateDto
         {
             GameResult = GameResultDto.WhiteWins,
             GameEndReason = GameEndReasonDto.Checkmate

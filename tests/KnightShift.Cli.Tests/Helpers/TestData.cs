@@ -6,7 +6,7 @@ namespace KnightShift.Cli.Tests.Helpers;
 
 public static class TestData
 {
-    public static MoveStep MoveStep()
+    public static MoveStep CreateMoveStep()
     {
         return new MoveStep(
             CreateMove(),
@@ -15,14 +15,14 @@ public static class TestData
         );
     }
 
-    public static MoveDto MoveDto(string from, string to)
+    public static MoveDto CreateMoveDto(string from, string to)
         => new() { Origin = from, Target = to };
 
     public static MoveDto[] ManyMoveDtos(params (string from, string to)[] moves)
-        => [.. moves.Select(move => MoveDto(move.from, move.to))];
+        => [.. moves.Select(move => CreateMoveDto(move.from, move.to))];
 
     public static IEnumerable<MoveStep> History(int count)
-        => [.. Enumerable.Range(0, count).Select(_ => MoveStep())];
+        => [.. Enumerable.Range(0, count).Select(_ => CreateMoveStep())];
 
     private static Move CreateMove()
     {

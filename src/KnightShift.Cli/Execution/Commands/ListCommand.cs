@@ -1,3 +1,5 @@
+using KnightShift.Application.Contracts.DTOs;
+using KnightShift.Application.UseCases;
 using KnightShift.Application.UseCases.GetMoves;
 using KnightShift.Cli.Rendering.State;
 
@@ -5,7 +7,7 @@ namespace KnightShift.Cli.Execution.Commands;
 
 public class ListCommand : ICommand
 {
-    private readonly GetMovesHandler _handler;
+    private readonly IQueryHandler<GetMovesQuery, IEnumerable<MoveDto>> _handler;
 
     public CommandInfo Info => new(
         Name: "list",
@@ -16,7 +18,7 @@ public class ListCommand : ICommand
         Order: 0
     );
 
-    public ListCommand(GetMovesHandler handler)
+    public ListCommand(IQueryHandler<GetMovesQuery, IEnumerable<MoveDto>> handler)
     {
         _handler = handler;
     }

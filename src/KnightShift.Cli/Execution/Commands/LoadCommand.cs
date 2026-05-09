@@ -1,3 +1,4 @@
+using KnightShift.Application.UseCases;
 using KnightShift.Application.UseCases.LoadGame;
 using KnightShift.Application.UseCases.LoadState;
 
@@ -5,8 +6,8 @@ namespace KnightShift.Cli.Execution.Commands;
 
 public class LoadCommand : ICommand
 {
-    private readonly LoadGameHandler _loadGameHandler;
-    private readonly LoadStateHandler _loadStateHandler;
+    private readonly ICommandHandler<LoadGameCommand> _loadGameHandler;
+    private readonly ICommandHandler<LoadStateCommand> _loadStateHandler;
 
     public CommandInfo Info => new(
         Name: "load",
@@ -17,7 +18,9 @@ public class LoadCommand : ICommand
         Order: 0
     );
 
-    public LoadCommand(LoadGameHandler loadGameHandler, LoadStateHandler loadStateHandler)
+    public LoadCommand(
+        ICommandHandler<LoadGameCommand> loadGameHandler, 
+        ICommandHandler<LoadStateCommand> loadStateHandler)
     {
         _loadGameHandler = loadGameHandler;
         _loadStateHandler = loadStateHandler;

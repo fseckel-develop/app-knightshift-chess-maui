@@ -1,4 +1,6 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases;
+using KnightShift.Application.UseCases.GetMoves;
+using KnightShift.Application.Contracts.DTOs;
 using KnightShift.Cli.Execution.Commands;
 using KnightShift.Cli.Rendering.State;
 using KnightShift.Cli.Tests.Helpers;
@@ -8,12 +10,14 @@ namespace KnightShift.Cli.Tests.Execution.Commands;
 
 public class ListCommandTests
 {
-    private readonly IGameService _game = Substitute.For<IGameService>();
+    private readonly IQueryHandler<GetMovesQuery, IEnumerable<MoveDto>> _handler =
+        Substitute.For<IQueryHandler<GetMovesQuery, IEnumerable<MoveDto>>>();
+
     private readonly ListCommand _command;
 
     public ListCommandTests()
     {
-        _command = new ListCommand(_game);
+        _command = new ListCommand(_handler);
     }
 
     [Theory]
@@ -27,21 +31,24 @@ public class ListCommandTests
     [Fact]
     public async Task Execute_Should_List_All_Moves()
     {
-        _game.GetLegalMoves().Returns(
-            TestData.ManyMoveDtos(("a2", "a3"), ("a2", "a4"))
-        );
+        _handler.Handle(Arg.Any<GetMovesQuery>()).Returns([
+            new MoveDto { Origin = "a2", Target = "a3" },
+            new MoveDto { Origin = "a2", Target = "a4" }
+        ]);
 
         var result = await _command.ExecuteAsync("list");
 
         Assert.Equal(UiContent.Moves, result.ContentType);
         Assert.Equal("Found 2 legal moves.", result.Message);
-        Assert.NotNull(result.ContentState);
+
+        var state = Assert.IsType<MovesContentState>(result.ContentState);
+        Assert.Null(state.OriginSquare);
     }
 
     [Fact]
-    public async Task Execute_Should_List_Moves_From_Square()
+    public async Task Execute_Should_List_Moves_From_Origin()
     {
-        _game.GetLegalMoves("e2").Returns(TestData.ManyMoveDtos(("e2", "e4")));
+        _handler.Handle(Arg.Any<GetMovesQuery>()).Returns([TestData.CreateMoveDto("e2", "e4")]);
 
         var result = await _command.ExecuteAsync("list e2");
 
@@ -54,7 +61,7 @@ public class ListCommandTests
     [Fact]
     public async Task Execute_Should_Handle_No_Moves()
     {
-        _game.GetLegalMoves().Returns([]);
+        _handler.Handle(Arg.Any<GetMovesQuery>()).Returns([]);
 
         var result = await _command.ExecuteAsync("list");
 
@@ -64,11 +71,12 @@ public class ListCommandTests
     [Fact]
     public async Task Execute_Should_Handle_Exception()
     {
-        _game.GetLegalMoves().Returns(_ => throw new Exception("fail"));
+        _handler.When(handler => handler.Handle(Arg.Any<GetMovesQuery>()))
+            .Do(_ => throw new Exception("fail"));
 
         var result = await _command.ExecuteAsync("list");
 
-        Assert.Equal("fail", result.Message);
         Assert.Equal(UiContent.Moves, result.ContentType);
+        Assert.Equal("fail", result.Message);
     }
 }

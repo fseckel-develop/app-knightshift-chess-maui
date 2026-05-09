@@ -2,7 +2,7 @@ using KnightShift.Application.Contracts.Interfaces;
 
 namespace KnightShift.Application.UseCases.LoadState;
 
-public class LoadStateHandler
+public class LoadStateHandler : ICommandHandler<LoadStateCommand>
 {
     private readonly IGameService _game;
 

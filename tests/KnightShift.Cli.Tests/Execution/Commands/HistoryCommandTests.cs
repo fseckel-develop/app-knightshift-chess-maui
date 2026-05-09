@@ -1,4 +1,6 @@
-using KnightShift.Application.Contracts.Interfaces;
+using KnightShift.Application.UseCases;
+using KnightShift.Application.UseCases.GetHistory;
+using KnightShift.Application.Game.Models;
 using KnightShift.Cli.Execution.Commands;
 using KnightShift.Cli.Rendering.State;
 using KnightShift.Cli.Tests.Helpers;
@@ -8,12 +10,14 @@ namespace KnightShift.Cli.Tests.Execution.Commands;
 
 public class HistoryCommandTests
 {
-    private readonly IGameService _game = Substitute.For<IGameService>();
+    private readonly IQueryHandler<GetHistoryQuery, IEnumerable<MoveStep>> _handler =
+        Substitute.For<IQueryHandler<GetHistoryQuery, IEnumerable<MoveStep>>>();
+
     private readonly HistoryCommand _command;
 
     public HistoryCommandTests()
     {
-        _command = new HistoryCommand(_game);
+        _command = new HistoryCommand(_handler);
     }
 
     [Theory]
@@ -27,7 +31,7 @@ public class HistoryCommandTests
     [Fact]
     public async Task Execute_Should_Return_Message_When_No_Moves()
     {
-        _game.GetHistory().Returns([]);
+        _handler.Handle(Arg.Any<GetHistoryQuery>()).Returns([]);
 
         var result = await _command.ExecuteAsync("history");
 
@@ -37,7 +41,7 @@ public class HistoryCommandTests
     [Fact]
     public async Task Execute_Should_Handle_Singular()
     {
-        _game.GetHistory().Returns(TestData.History(1));
+        _handler.Handle(Arg.Any<GetHistoryQuery>()).Returns([TestData.CreateMoveStep()]);
 
         var result = await _command.ExecuteAsync("history");
 
@@ -48,7 +52,7 @@ public class HistoryCommandTests
     [Fact]
     public async Task Execute_Should_Handle_Plural()
     {
-        _game.GetHistory().Returns(TestData.History(2));
+        _handler.Handle(Arg.Any<GetHistoryQuery>()).Returns(TestData.History(2));
 
         var result = await _command.ExecuteAsync("history");
 

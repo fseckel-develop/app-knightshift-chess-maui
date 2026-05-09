@@ -3,7 +3,7 @@ using KnightShift.Application.Contracts.DTOs;
 
 namespace KnightShift.Application.UseCases.GetMoves;
 
-public class GetMovesHandler
+public class GetMovesHandler : IQueryHandler<GetMovesQuery, IEnumerable<MoveDto>>
 {
     private readonly IGameService _game;
 

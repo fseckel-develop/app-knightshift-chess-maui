@@ -2,7 +2,7 @@ using KnightShift.Application.Contracts.Interfaces;
 
 namespace KnightShift.Application.UseCases.ExportState;
 
-public class ExportStateHandler
+public class ExportStateHandler : IQueryHandler<ExportStateQuery, string>
 {
     private readonly IGameService _game;
 

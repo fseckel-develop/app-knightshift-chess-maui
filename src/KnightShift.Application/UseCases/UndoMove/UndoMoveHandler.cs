@@ -3,7 +3,7 @@ using KnightShift.Application.Contracts.DTOs;
 
 namespace KnightShift.Application.UseCases.UndoMove;
 
-public class UndoMoveHandler
+public class UndoMoveHandler : IQueryHandler<UndoMoveCommand, MoveDto?>
 {
     private readonly IGameService _game;
 
