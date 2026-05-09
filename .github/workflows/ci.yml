@@ -20,10 +20,25 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: |
+          dotnet restore src/KnightShift.Domain
+          dotnet restore src/KnightShift.Engine
+          dotnet restore src/KnightShift.Application
+          dotnet restore src/KnightShift.Infrastructure
+          dotnet restore src/KnightShift.Cli
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        run: |
+          dotnet build src/KnightShift.Domain --no-restore --configuration Release
+          dotnet build src/KnightShift.Engine --no-restore --configuration Release
+          dotnet build src/KnightShift.Application --no-restore --configuration Release
+          dotnet build src/KnightShift.Infrastructure --no-restore --configuration Release
+          dotnet build src/KnightShift.Cli --no-restore --configuration Release
 
       - name: Run tests
-        run: dotnet test --no-build --configuration Release --verbosity normal
+        run: |
+          dotnet test tests/KnightShift.Domain.Tests --configuration Release
+          dotnet test tests/KnightShift.Engine.Tests --configuration Release
+          dotnet test tests/KnightShift.Application.Tests --configuration Release
+          dotnet test tests/KnightShift.Infrastructure.Tests --configuration Release
+          dotnet test tests/KnightShift.Cli.Tests --configuration Release
