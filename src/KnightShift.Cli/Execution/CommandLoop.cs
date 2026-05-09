@@ -38,6 +38,10 @@ public class CommandLoop
 
             var ui = _renderer.Render(_uiState);
             Console.WriteLine(ui);
+
+            if (_uiState.ExitRequested)
+                break;
+                
             Console.Write("> ");
 
             var input = Console.ReadLine() ?? "";
@@ -64,12 +68,6 @@ public class CommandLoop
             {
                 _uiState.StatusMessage = ex.Message;
                 continue;
-            }
-
-            if (result.ExitRequested)
-            {
-                Console.WriteLine("  Shutting down KnightShift CLI ... Bye! \n");
-                break;
             }
 
             _updater.Apply(_uiState, result);

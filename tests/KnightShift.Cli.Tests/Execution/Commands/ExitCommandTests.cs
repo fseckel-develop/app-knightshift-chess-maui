@@ -28,5 +28,6 @@ public class ExitCommandTests
         var result = await _command.ExecuteAsync("exit");
 
         Assert.True(result.ExitRequested);
+        Assert.Equal("Shutting down KnightShift CLI... Bye!", result.Message);
     }
 }

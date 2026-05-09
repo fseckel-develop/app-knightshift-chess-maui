@@ -21,6 +21,7 @@ public class ExitCommand : ICommand
     {
         return Task.FromResult(new CommandResult
         {
+            Message = "Shutting down KnightShift CLI... Bye!",
             ExitRequested = true
         });
     }

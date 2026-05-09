@@ -50,5 +50,7 @@ public class UiStateUpdater
         state.AutoPrintBoard = result.AutoPrintBoard ?? state.AutoPrintBoard;
 
         state.PrintBoard = result.PrintBoard || (state.AutoPrintBoard && result.RefreshGameState);
+
+        state.ExitRequested = result.ExitRequested;
     }
 }
